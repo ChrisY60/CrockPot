@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using CrockPot.Data;
 using CrockPot.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CrockPot.Controllers
 {
+    [Authorize]
     public class RecipesController : Controller
     {
         private readonly ApplicationDbContext _context;
