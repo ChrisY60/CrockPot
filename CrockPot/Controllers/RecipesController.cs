@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using CrockPot.Data;
 using CrockPot.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.Diagnostics;
 
 namespace CrockPot.Controllers
 {
@@ -37,8 +38,8 @@ namespace CrockPot.Controllers
                 return NotFound();
             }
 
-            var recipe = await _context.Recipes
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var recipe = await _context.Recipes.Include(r => r.Categories)
+                                                .FirstOrDefaultAsync(m => m.Id == id);
             if (recipe == null)
             {
                 return NotFound();
@@ -53,21 +54,29 @@ namespace CrockPot.Controllers
             return View();
         }
 
-        // POST: Recipes/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,Ingredients,AuthorId")] Recipe recipe)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description,Ingredients,AuthorId")] Recipe recipe, int[] selectedCategories)
         {
-            if (ModelState.IsValid)
-            {
+            if (ModelState.IsValid){
+                if (selectedCategories != null) { 
+                    recipe.Categories = _context.Categories.Where(c => selectedCategories.Contains(c.Id)).ToList();
+                }
+
+                // debug print mahni go posle
+                foreach (var category in recipe.Categories){
+                    Debug.WriteLine($"Category: {category.Name}");
+                }
+
                 _context.Add(recipe);
+                
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             return View(recipe);
         }
+
 
         // GET: Recipes/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -85,9 +94,7 @@ namespace CrockPot.Controllers
             return View(recipe);
         }
 
-        // POST: Recipes/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Ingredients,AuthorId")] Recipe recipe)
