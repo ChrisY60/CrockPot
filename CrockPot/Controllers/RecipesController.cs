@@ -25,6 +25,7 @@ namespace CrockPot.Controllers
         // GET: Recipes
         public async Task<IActionResult> Index()
         {
+            ViewBag.allCategories = _context.Categories;
               return _context.Recipes != null ? 
                           View(await _context.Recipes.ToListAsync()) :
                           Problem("Entity set 'ApplicationDbContext.Recipes'  is null.");
@@ -51,6 +52,7 @@ namespace CrockPot.Controllers
         // GET: Recipes/Create
         public IActionResult Create()
         {
+            ViewBag.allCategories = _context.Categories;
             return View();
         }
 
