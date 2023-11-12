@@ -24,9 +24,15 @@
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Ingredients" class="control-label"></label>
-                <input asp-for="Ingredients" class="form-control" />
-                <span asp-validation-for="Ingredients" class="text-danger"></span>
+                <label>Select Ingredients</label>
+
+                @foreach (var ingredient in ViewBag.allIngredients)
+                {
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="selectedIngredients" value="@ingredient.Id">
+                        <label class="form-check-label">@ingredient.Name</label>
+                    </div>
+                }
             </div>
             <div class="form-group">
                 <label asp-for="AuthorId" class="control-label"></label>

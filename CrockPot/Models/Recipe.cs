@@ -8,9 +8,8 @@ namespace CrockPot.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public string Ingredients { get; set; }
+        public ICollection<Ingredient>? Ingredients { get; set; } = new List<Ingredient>();
         public string AuthorId { get; set; }
-
         public ICollection<Category>? Categories { get; set; } = new List<Category>();
 
     }

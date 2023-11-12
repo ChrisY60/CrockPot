@@ -13,6 +13,7 @@ namespace CrockPot.Data
 
         public DbSet<Recipe> Recipes { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Ingredient> Ingredients { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -21,6 +22,14 @@ namespace CrockPot.Data
                 .HasMany(r => r.Categories)
                 .WithMany(c => c.Recipes)
                 .UsingEntity(j => j.ToTable("RecipeCategory"));
+
+            modelBuilder.Entity<Recipe>()
+                .HasMany(r => r.Ingredients)
+                .WithMany(i => i.Recipes)
+                .UsingEntity(j => j.ToTable("RecipeIngredient"));
+
         }
+
+        
     }
 }

@@ -26,6 +26,7 @@ namespace CrockPot.Controllers
         public async Task<IActionResult> Index()
         {
             ViewBag.allCategories = _context.Categories;
+            ViewBag.allIngredients = _context.Ingredients;
               return _context.Recipes != null ? 
                           View(await _context.Recipes.ToListAsync()) :
                           Problem("Entity set 'ApplicationDbContext.Recipes'  is null.");
@@ -40,6 +41,7 @@ namespace CrockPot.Controllers
             }
 
             var recipe = await _context.Recipes.Include(r => r.Categories)
+                                                .Include(r => r.Ingredients)
                                                 .FirstOrDefaultAsync(m => m.Id == id);
             if (recipe == null)
             {
@@ -53,21 +55,22 @@ namespace CrockPot.Controllers
         public IActionResult Create()
         {
             ViewBag.allCategories = _context.Categories;
+            ViewBag.allIngredients = _context.Ingredients;
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,Ingredients,AuthorId")] Recipe recipe, int[] selectedCategories)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description,AuthorId")] Recipe recipe, int[] selectedCategories, int[] selectedIngredients)
         {
             if (ModelState.IsValid){
                 if (selectedCategories != null) { 
                     recipe.Categories = _context.Categories.Where(c => selectedCategories.Contains(c.Id)).ToList();
                 }
 
-                // debug print mahni go posle
-                foreach (var category in recipe.Categories){
-                    Debug.WriteLine($"Category: {category.Name}");
+                if (selectedIngredients != null)
+                {
+                    recipe.Ingredients = _context.Ingredients.Where(i => selectedIngredients.Contains(i.Id)).ToList();
                 }
 
                 _context.Add(recipe);
