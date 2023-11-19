@@ -20,3 +20,10 @@ body {
 a {
     color: #68029c;
 }
+
+.scrollable-container {
+    border: 2px solid #ccc;
+    width: 300px;
+    height: 100px;
+    overflow-y: scroll;
+}
