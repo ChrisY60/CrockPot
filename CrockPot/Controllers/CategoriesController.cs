@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using CrockPot.Data;
 using CrockPot.Models;
 using Microsoft.AspNetCore.Authorization;
-using CrockPot.Services;
 using CrockPot.Services.IServices;
 
 namespace CrockPot.Controllers
@@ -140,11 +133,7 @@ namespace CrockPot.Controllers
             {
                 return Problem("Entity set 'ApplicationDbContext.Categories'  is null.");
             }
-            var category = await _categoryService.GetCategoryByIdAsync(id);
-            if (category != null)
-            {
-                await _categoryService.UpdateCategoryAsync(category);
-            }
+            await _categoryService.DeleteCategoryAsync(id);
 
             return RedirectToAction(nameof(Index));
         }

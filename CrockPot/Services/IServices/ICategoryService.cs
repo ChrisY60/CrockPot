@@ -1,6 +1,4 @@
 ﻿using CrockPot.Models;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace CrockPot.Services.IServices
 {

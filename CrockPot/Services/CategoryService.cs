@@ -2,8 +2,6 @@
 using CrockPot.Models;
 using CrockPot.Services.IServices;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace CrockPot.Services
 {

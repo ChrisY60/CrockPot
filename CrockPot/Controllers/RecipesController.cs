@@ -1,48 +1,42 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using CrockPot.Data;
 using CrockPot.Models;
 using Microsoft.AspNetCore.Authorization;
-using System.Diagnostics;
+using CrockPot.Services.IServices;
 
 namespace CrockPot.Controllers
 {
     [Authorize]
     public class RecipesController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IRecipeService _recipeService;
+        private readonly ICategoryService _categoryService;
+        private readonly IIngredientService _ingredientService;
 
-        public RecipesController(ApplicationDbContext context)
+        public RecipesController(IRecipeService recipeService, ICategoryService categoryService, IIngredientService ingredientService)
         {
-            _context = context;
+            _recipeService = recipeService;
+            _categoryService = categoryService;
+            _ingredientService = ingredientService;
         }
 
-        // GET: Recipes
         public async Task<IActionResult> Index()
         {
-            ViewBag.allCategories = _context.Categories;
-            ViewBag.allIngredients = _context.Ingredients;
-              return _context.Recipes != null ? 
-                          View(await _context.Recipes.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.Recipes'  is null.");
+            var recipes = await _recipeService.GetRecipesAsync();
+            ViewBag.allCategories = await _categoryService.GetCategoriesAsync();
+            ViewBag.allIngredients = await _ingredientService.GetIngredientsAsync();
+
+            return View(recipes);
         }
 
-        // GET: Recipes/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Recipes == null)
+            if (id == null || !_recipeService.RecipeExists(id.Value))
             {
                 return NotFound();
             }
 
-            var recipe = await _context.Recipes.Include(r => r.Categories)
-                                                .Include(r => r.Ingredients)
-                                                .FirstOrDefaultAsync(m => m.Id == id);
+            var recipe = await _recipeService.GetRecipeByIdAsync(id.Value);
             if (recipe == null)
             {
                 return NotFound();
@@ -51,11 +45,11 @@ namespace CrockPot.Controllers
             return View(recipe);
         }
 
-        // GET: Recipes/Create
         public IActionResult Create()
         {
-            ViewBag.allCategories = _context.Categories;
-            ViewBag.allIngredients = _context.Ingredients;
+            ViewBag.allCategories = _categoryService.GetCategoriesAsync().Result;
+            ViewBag.allIngredients = _ingredientService.GetIngredientsAsync().Result;
+
             return View();
         }
 
@@ -63,35 +57,26 @@ namespace CrockPot.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Description,AuthorId")] Recipe recipe, int[] selectedCategories, int[] selectedIngredients)
         {
-            if (ModelState.IsValid){
-                if (selectedCategories != null) { 
-                    recipe.Categories = _context.Categories.Where(c => selectedCategories.Contains(c.Id)).ToList();
-                }
-
-                if (selectedIngredients != null)
-                {
-                    recipe.Ingredients = _context.Ingredients.Where(i => selectedIngredients.Contains(i.Id)).ToList();
-                }
-
-                _context.Add(recipe);
-                
-                await _context.SaveChangesAsync();
+            if (ModelState.IsValid)
+            {
+                await _recipeService.CreateRecipeAsync(recipe, selectedCategories, selectedIngredients);
                 return RedirectToAction(nameof(Index));
             }
+
+            ViewBag.allCategories = await _categoryService.GetCategoriesAsync();
+            ViewBag.allIngredients = await _ingredientService.GetIngredientsAsync();
 
             return View(recipe);
         }
 
-
-        // GET: Recipes/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Recipes == null)
+            if (id == null || !_recipeService.RecipeExists(id.Value))
             {
                 return NotFound();
             }
 
-            var recipe = await _context.Recipes.FindAsync(id);
+            var recipe = await _recipeService.GetRecipeByIdAsync(id.Value);
             if (recipe == null)
             {
                 return NotFound();
@@ -99,7 +84,6 @@ namespace CrockPot.Controllers
             return View(recipe);
         }
 
-        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Ingredients,AuthorId")] Recipe recipe)
@@ -113,12 +97,11 @@ namespace CrockPot.Controllers
             {
                 try
                 {
-                    _context.Update(recipe);
-                    await _context.SaveChangesAsync();
+                    await _recipeService.UpdateRecipeAsync(recipe);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!RecipeExists(recipe.Id))
+                    if (!_recipeService.RecipeExists(recipe.Id))
                     {
                         return NotFound();
                     }
@@ -132,16 +115,14 @@ namespace CrockPot.Controllers
             return View(recipe);
         }
 
-        // GET: Recipes/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Recipes == null)
+            if (id == null || !_recipeService.RecipeExists(id.Value))
             {
                 return NotFound();
             }
 
-            var recipe = await _context.Recipes
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var recipe = await _recipeService.GetRecipeByIdAsync(id.Value);
             if (recipe == null)
             {
                 return NotFound();
@@ -150,28 +131,21 @@ namespace CrockPot.Controllers
             return View(recipe);
         }
 
-        // POST: Recipes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Recipes == null)
+            if (_recipeService.RecipeExists(id))
             {
-                return Problem("Entity set 'ApplicationDbContext.Recipes'  is null.");
+                await _recipeService.DeleteRecipeAsync(id);
             }
-            var recipe = await _context.Recipes.FindAsync(id);
-            if (recipe != null)
-            {
-                _context.Recipes.Remove(recipe);
-            }
-            
-            await _context.SaveChangesAsync();
+
             return RedirectToAction(nameof(Index));
         }
 
         private bool RecipeExists(int id)
         {
-          return (_context.Recipes?.Any(e => e.Id == id)).GetValueOrDefault();
+            return _recipeService.RecipeExists(id);
         }
     }
 }
