@@ -2,7 +2,7 @@
 @using CrockPot.Data
 <link rel="stylesheet" href="Style.css">
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create"; 
 }
 
 <h1>Create</h1>
@@ -26,10 +26,13 @@
 
             <div class="form-group">
                 <label>Select Ingredients</label>
+                <br />
+                <input type="text" placeholder="Search..." id="ingredientsSearch">
                 <div class="scrollable-container">
+                    
                     @foreach (var ingredient in ViewBag.allIngredients)
                     {
-                        <div class="form-check">
+                        <div class="form-check ingredient-checkbox">
                             <input class="form-check-input" type="checkbox" name="selectedIngredients" value="@ingredient.Id">
                             <label class="form-check-label">@ingredient.Name</label>
                         </div>
@@ -47,10 +50,13 @@
 
             <div class="form-group">
                 <label>Select Categories</label>
+                <br />
+                <input type="text" placeholder="Search..." id="categoriesSearch">
                 <div class="scrollable-container">
+                    
                     @foreach (var category in ViewBag.allCategories)
                     {
-                        <div class="form-check">
+                        <div class="form-check category-checkbox">
                             <input class="form-check-input" type="checkbox" name="selectedCategories" value="@category.Id">
                             <label class="form-check-label">@category.Name</label>
                         </div>
@@ -59,11 +65,9 @@
             </div>
             <br />
 
-
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
-
         </form>
     </div>
 </div>
@@ -76,4 +80,43 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+
+        function filterCategoriesCheckboxes(checkbox) {
+            var label = checkbox.querySelector('.form-check-label');
+            var categoryName = label.textContent.toLowerCase();
+            var searchCategoryValue = document.getElementById("categoriesSearch").value.toLowerCase();
+
+            if (categoryName.includes(searchCategoryValue)) {
+                checkbox.style.display = 'block';
+            } else {
+                checkbox.style.display = 'none';
+            }
+        }
+
+        function filterIngredientsCheckboxes(checkbox) {
+            var label = checkbox.querySelector('.form-check-label');
+            var ingredientName = label.textContent.toLowerCase();
+            var searchIngredientValue = document.getElementById("ingredientsSearch").value.toLowerCase();
+
+
+            if (ingredientName.includes(searchIngredientValue)) {
+                checkbox.style.display = 'block';
+            } else {
+                checkbox.style.display = 'none';
+            }
+        }
+
+        document.getElementById("categoriesSearch").addEventListener("input", function () {
+            var searchCategoryValue = this.value.toLowerCase();
+            var categoryCheckboxes = document.querySelectorAll('.category-checkbox');
+            categoryCheckboxes.forEach(filterCategoriesCheckboxes);
+        });
+
+        document.getElementById("ingredientsSearch").addEventListener("input", function() {
+            var searchIngredientValue = this.value.toLowerCase();
+            var ingredientCheckboxes = document.querySelectorAll('.ingredient-checkbox');
+            ingredientCheckboxes.forEach(filterIngredientsCheckboxes);
+        });
+    </script>
 }
