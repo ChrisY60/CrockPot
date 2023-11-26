@@ -14,7 +14,7 @@ html {
 }
 
 body {
-    background-color: #e6ddd6;
+    background-color: #e29ef0;
 }
 
 a {
@@ -22,8 +22,23 @@ a {
 }
 
 .scrollable-container {
-    border: 2px solid #ccc;
+    border: 2px solid #68029c;
+    border-radius: 5px;
     width: 300px;
     height: 100px;
     overflow-y: scroll;
+}
+
+.scrollable-container::-webkit-scrollbar {
+    width: 5px;
+    border-radius: 5px;
+    background-color: #a95fb8;
+}
+.scrollable-container::-webkit-scrollbar-thumb {
+    background: #68029c;
+    border-radius: 10px;
+}
+
+.input-box {
+    border-radius: 10px;
 }
