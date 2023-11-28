@@ -4,4 +4,12 @@
 
 <div class="text-center">
     <h1 class="display-4">Welcome to CrockPot</h1>
+    <h2>Search by name</h2>
+
+    <form asp-controller="Recipes" asp-action="SearchByName" method="get">
+        <input type="text" name="name" placeholder="Enter recipe name" />
+        <button type="submit">Search</button>
+    </form>
 </div>
+
+

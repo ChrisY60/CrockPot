@@ -67,5 +67,13 @@ namespace CrockPot.Services
         {
             return _context.Recipes.Any(e => e.Id == id);
         }
+
+        public async Task<List<Recipe>> GetAllRecipesByNameAsync(string searchString)
+        {
+            return await _context.Recipes
+                .Where(recipe => recipe.Name.Contains(searchString))
+                .ToListAsync();
+        }
+
     }
 }
