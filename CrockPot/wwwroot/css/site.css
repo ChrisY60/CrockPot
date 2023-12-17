@@ -42,3 +42,12 @@ a {
 .input-box {
     border-radius: 10px;
 }
+
+.display_box {
+    display: inline-block;
+    margin-block: 10px;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: rgba(169, 95, 184, 0.5);
+    width: 25vw;
+}
