@@ -17,6 +17,14 @@ body {
     background-color: #e29ef0;
 }
 
+.body_home {
+    background-color: #e29ef0;
+    background-image: url('../Images/background6-new.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+}
+
 a {
     color: #68029c;
 }
@@ -34,6 +42,7 @@ a {
     border-radius: 5px;
     background-color: #a95fb8;
 }
+
 .scrollable-container::-webkit-scrollbar-thumb {
     background: #68029c;
     border-radius: 10px;
@@ -44,10 +53,37 @@ a {
 }
 
 .display_box {
-    display: inline-block;
+    display: inline-flex;
     margin-block: 10px;
     padding: 20px;
     border-radius: 10px;
-    background-color: rgba(169, 95, 184, 0.5);
+    background-color: #C67FD3;
     width: 25vw;
+    min-width: 300px;
+}
+.display_box_text {
+    flex: 1;
+    padding: 10px;
+}
+
+.display_box_image {
+    padding: 10px;
+    overflow: hidden;
+}
+
+.display_box_image img {
+    max-width: 8vw;
+    height: auto;
+    border-radius: 10px;  
+    min-width: 70px;
+}
+
+.main_page_ui_box {
+    display: block;
+    margin: 10px auto;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #C67FD3;
+    width: 40vw;
+    height: 70vh;
 }

@@ -1,10 +1,10 @@
 ﻿@model IEnumerable<CrockPot.Models.Recipe>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Recipes";
 }
 
-<h1>Index</h1>
+<h1>Recipes</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -12,20 +12,26 @@
 
 @foreach (var item in Model) {
     <div class="display_box">
-        <span>Name: </span>
-        @Html.DisplayFor(modelItem => item.Name)
-        <br>
-        <span>Description: </span>
-        @Html.DisplayFor(modelItem => item.Description)
-        <br>
-        <span>Ingredients: </span>
-        @Html.DisplayFor(modelItem => item.Ingredients)
-        <br>
-        <span>By: </span>
-        @Html.DisplayFor(modelItem => item.AuthorId)
-        <br>
-        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-        <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-        <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+        <div>
+            <span>Name: </span>
+            @Html.DisplayFor(modelItem => item.Name)
+            <br>
+            <span>Description: </span>
+            @Html.DisplayFor(modelItem => item.Description)
+            <br>
+            <span>Ingredients: </span>
+            @Html.DisplayFor(modelItem => item.Ingredients)
+            <br>
+            <span>By: </span>
+            @Html.DisplayFor(modelItem => item.AuthorId)
+            <br>
+            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+            <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+        </div>
+        <div class="display_box_image">
+            <img src="~/Images/random_meal.png" )">
+        </div>
+
     </div>
 }
