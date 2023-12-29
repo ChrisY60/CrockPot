@@ -148,16 +148,20 @@ namespace CrockPot.Controllers
             return _recipeService.RecipeExists(id);
         }
 
-        public async Task<IActionResult> SearchByName(string name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                return RedirectToAction(nameof(Index));
-            }
 
-            var recipes = await _recipeService.GetAllRecipesByNameAsync(name);
+        public async Task<IActionResult> RecipeSearch()
+        {
+            ViewBag.allCategories = await _categoryService.GetCategoriesAsync();
+            ViewBag.allIngredients = await _ingredientService.GetIngredientsAsync();
+            return View("RecipeSearch");
+        }
+        public async Task<IActionResult> SearchByFilter(string name, int[] selectedCategories, int[] selectedIngredients)
+        {
+            var recipes = await _recipeService.GetAllRecipesByFilterAsync(name, selectedCategories, selectedIngredients);
             return View("Index", recipes);
         }
+
+
 
     }
 }

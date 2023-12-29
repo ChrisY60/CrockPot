@@ -68,12 +68,27 @@ namespace CrockPot.Services
             return _context.Recipes.Any(e => e.Id == id);
         }
 
-        public async Task<List<Recipe>> GetAllRecipesByNameAsync(string searchString)
+        public async Task<List<Recipe>> GetAllRecipesByFilterAsync(string name, int[] selectedCategories, int[] selectedIngredients)
         {
-            return await _context.Recipes
-                .Where(recipe => recipe.Name.Contains(searchString))
-                .ToListAsync();
-        }
+            IQueryable<Recipe> query = _context.Recipes;
 
+            if (!string.IsNullOrEmpty(name))
+            {
+                query = query.Where(recipe => recipe.Name.Contains(name));
+            }
+
+            if (selectedCategories != null && selectedCategories.Length > 0)
+            {
+                query = query.Where(recipe => recipe.Categories.Any(category => selectedCategories.Contains(category.Id)));
+            }
+
+            if (selectedIngredients != null && selectedIngredients.Length > 0)
+            {
+                query = query.Where(recipe => recipe.Ingredients.All(ingredient => selectedIngredients.Contains(ingredient.Id)));
+            }
+
+            return await query.ToListAsync();
+
+        }
     }
 }
