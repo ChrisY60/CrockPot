@@ -81,12 +81,15 @@ namespace CrockPot.Controllers
             {
                 return NotFound();
             }
+            ViewBag.allCategories = await _categoryService.GetCategoriesAsync();
+            ViewBag.allIngredients = await _ingredientService.GetIngredientsAsync();
+
             return View(recipe);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,Ingredients,AuthorId")] Recipe recipe)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,AuthorId")] Recipe recipe, int[] selectedCategories, int[] selectedIngredients)
         {
             if (id != recipe.Id)
             {
@@ -97,7 +100,19 @@ namespace CrockPot.Controllers
             {
                 try
                 {
-                    await _recipeService.UpdateRecipeAsync(recipe);
+                    var existingRecipe = await _recipeService.GetRecipeByIdAsync(id);
+
+                    existingRecipe.Name = recipe.Name;
+                    existingRecipe.Description = recipe.Description;
+                    existingRecipe.AuthorId = recipe.AuthorId;
+
+                    var categories = await _categoryService.GetCategoriesAsync();
+                    existingRecipe.Categories = categories.Where(c => selectedCategories.Contains(c.Id)).ToList();
+
+                    var ingredients = await _ingredientService.GetIngredientsAsync();
+                    existingRecipe.Ingredients = ingredients.Where(i => selectedIngredients.Contains(i.Id)).ToList();
+
+                    await _recipeService.UpdateRecipeAsync(existingRecipe);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -112,6 +127,10 @@ namespace CrockPot.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
+
+            ViewBag.allCategories = await _categoryService.GetCategoriesAsync();
+            ViewBag.allIngredients = await _ingredientService.GetIngredientsAsync();
+
             return View(recipe);
         }
 

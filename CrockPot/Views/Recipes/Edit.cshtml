@@ -24,15 +24,40 @@
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Ingredients" class="control-label"></label>
-                <input asp-for="Ingredients" class="form-control" />
-                <span asp-validation-for="Ingredients" class="text-danger"></span>
+                <label>Select Ingredients</label>
+                <br>
+                <input class="input-box" type="text" placeholder="Search..." id="ingredientsSearch">
+                <div class="scrollable-container">
+                    @foreach (var ingredient in ViewBag.allIngredients)
+                    {
+                        <div>
+                            <input type="checkbox" name="selectedIngredients" value="@ingredient.Id" @(Model.Ingredients.Any(i => i.Id == ingredient.Id) ? "checked" : "")>
+                            <label>@ingredient.Name</label>
+                        </div>
+                    }
+                </div>
             </div>
             <div class="form-group">
                 <label asp-for="AuthorId" class="control-label"></label>
                 <input asp-for="AuthorId" class="form-control" />
                 <span asp-validation-for="AuthorId" class="text-danger"></span>
             </div>
+            <div class="form-group">
+                <label>Select Categories</label>
+                <br />
+                <input class="input-box" type="text" placeholder="Search..." id="categoriesSearch">
+                <div class="scrollable-container">
+                    @foreach (var category in ViewBag.allCategories)
+                    {
+                        <div>
+                            <input type="checkbox" name="selectedCategories" value="@category.Id" @(Model.Categories.Any(c => c.Id == category.Id) ? "checked" : "")>
+                            <label>@category.Name</label>
+                        </div>
+                    }
+                </div>
+            </div>
+            <br />
+
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
@@ -45,5 +70,44 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script>
+        function filterCategoriesCheckboxes() {
+            var searchCategoryValue = document.getElementById("categoriesSearch").value.toLowerCase();
+            var categoryCheckboxes = document.querySelectorAll('input[name="selectedCategories"]');
+
+            categoryCheckboxes.forEach(function (checkbox) {
+                var label = checkbox.nextElementSibling;
+                var categoryName = label.textContent.toLowerCase();
+
+                if (categoryName.includes(searchCategoryValue)) {
+                    checkbox.parentNode.style.display = 'block';
+                } else {
+                    checkbox.parentNode.style.display = 'none';
+                }
+            });
+        }
+
+        function filterIngredientsCheckboxes() {
+            var searchIngredientValue = document.getElementById("ingredientsSearch").value.toLowerCase();
+            var ingredientCheckboxes = document.querySelectorAll('input[name="selectedIngredients"]');
+
+            ingredientCheckboxes.forEach(function (checkbox) {
+                var label = checkbox.nextElementSibling;
+                var ingredientName = label.textContent.toLowerCase();
+
+                if (ingredientName.includes(searchIngredientValue)) {
+                    checkbox.parentNode.style.display = 'block';
+                } else {
+                    checkbox.parentNode.style.display = 'none';
+                }
+            });
+        }
+
+        document.getElementById("categoriesSearch").addEventListener("input", filterCategoriesCheckboxes);
+
+        document.getElementById("ingredientsSearch").addEventListener("input", filterIngredientsCheckboxes);
+    </script>
 }
