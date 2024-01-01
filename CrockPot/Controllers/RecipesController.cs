@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using CrockPot.Models;
 using Microsoft.AspNetCore.Authorization;
 using CrockPot.Services.IServices;
+using System.Security.Claims;
 
 namespace CrockPot.Controllers
 {
@@ -55,8 +56,10 @@ namespace CrockPot.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,AuthorId")] Recipe recipe, int[] selectedCategories, int[] selectedIngredients)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description")] Recipe recipe, int[] selectedCategories, int[] selectedIngredients)
         {
+            recipe.AuthorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             if (ModelState.IsValid)
             {
                 await _recipeService.CreateRecipeAsync(recipe, selectedCategories, selectedIngredients);

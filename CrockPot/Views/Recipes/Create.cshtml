@@ -11,7 +11,7 @@
 <hr>
 <div>
     <form asp-action="Create">
-        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div asp-validation-summary="All" class="text-danger"></div>
         <div>
             <label asp-for="Name"></label>
             <br>
@@ -39,13 +39,6 @@
                     </div>
                 }
             </div>
-        </div>
-
-        <div>
-            <label asp-for="AuthorId" class="control-label"></label>
-            <br>
-            <input class="input-box" asp-for="AuthorId" />
-            <span asp-validation-for="AuthorId" class="text-danger"></span>
         </div>
 
         <div>
