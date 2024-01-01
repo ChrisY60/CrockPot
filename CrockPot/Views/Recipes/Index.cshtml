@@ -10,28 +10,42 @@
     <a asp-action="Create">Create New</a>
 </p>
 
-@foreach (var item in Model) {
+@foreach (var item in Model)
+{
     <div class="display_box">
         <div>
             <span>Name: </span>
-            @Html.DisplayFor(modelItem => item.Name)
+            @Html.Raw(Truncate(item.Name, 7))
             <br>
             <span>Description: </span>
-            @Html.DisplayFor(modelItem => item.Description)
+            @Html.Raw(Truncate(item.Description, 7))
             <br>
             <span>Ingredients: </span>
-            @Html.DisplayFor(modelItem => item.Ingredients)
+            @Html.Raw(Truncate(string.Join(", ", item.Ingredients?.Select(i => i.Name)), 7))
             <br>
             <span>By: </span>
-            @Html.DisplayFor(modelItem => item.AuthorId)
+            @Html.Raw(Truncate(item.AuthorId, 7))
             <br>
             <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
             <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
             <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
         </div>
         <div class="display_box_image">
-            <img src="~/Images/random_meal.png" )">
+            <img src="~/Images/random_meal.png" />
         </div>
-
     </div>
+}
+
+@functions {
+    string Truncate(string input, int length)
+    {
+        if (input.Length <= length)
+        {
+            return input;
+        }
+        else
+        {
+            return input.Substring(0, length) + "...";
+        }
+    }
 }
