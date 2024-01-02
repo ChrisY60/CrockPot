@@ -14,7 +14,11 @@
 
 @foreach (var item in Model)
 {
+
     <button class="display_box" onclick="window.location.href = '@Url.Action("Details", "Recipes")/' + @item.Id;">
+        <div class="display_box_image">
+            <img src="~/Images/random_meal.png" />
+        </div>
         <div>
             <span>Name: </span>
             @Html.Raw(Truncate(item.Name, 7))
@@ -40,9 +44,7 @@
             <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
             <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
         </div>
-        <div class="display_box_image">
-            <img src="~/Images/random_meal.png" />
-        </div>
+        
     </button>
 }
 
