@@ -1,5 +1,8 @@
 ﻿@model CrockPot.Models.Recipe
 @using CrockPot.Data
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<IdentityUser> _userManager
+
 
 @{
     ViewData["Title"] = "Details";
@@ -35,10 +38,19 @@
             </ul>
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AuthorId)
+            <p>Author</p>
         </dt>
+
+        @{
+            var user = await _userManager.FindByIdAsync(Model.AuthorId);
+            string name = "Unknown";
+            if (user != null)
+            {
+                name = user.UserName;
+            }
+        }
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AuthorId)
+            @Html.Raw(name)
         </dd>
         <dt class="col-sm-2">
             Categories

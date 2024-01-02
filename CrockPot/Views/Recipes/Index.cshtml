@@ -1,4 +1,6 @@
 ﻿@model IEnumerable<CrockPot.Models.Recipe>
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<IdentityUser> _userManager
 
 @{
     ViewData["Title"] = "Recipes";
@@ -24,7 +26,16 @@
             @Html.Raw(Truncate(string.Join(", ", item.Ingredients?.Select(i => i.Name)), 7))
             <br>
             <span>By: </span>
-            @Html.Raw(Truncate(item.AuthorId, 7))
+            @{
+                var user = await _userManager.FindByIdAsync(item.AuthorId);
+                string name = "Unknown";
+                if(user != null)
+                {
+                    name = user.UserName;
+                }
+                
+            }
+            @Html.Raw(Truncate(name, 7))
             <br>
             <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
             <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
