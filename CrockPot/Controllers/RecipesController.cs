@@ -13,12 +13,13 @@ namespace CrockPot.Controllers
         private readonly IRecipeService _recipeService;
         private readonly ICategoryService _categoryService;
         private readonly IIngredientService _ingredientService;
-
-        public RecipesController(IRecipeService recipeService, ICategoryService categoryService, IIngredientService ingredientService)
+        private readonly ICommentService _commentService;
+        public RecipesController(IRecipeService recipeService, ICategoryService categoryService, IIngredientService ingredientService, ICommentService commentService)
         {
             _recipeService = recipeService;
             _categoryService = categoryService;
             _ingredientService = ingredientService;
+            _commentService = commentService;
         }
 
         public async Task<IActionResult> Index()
@@ -42,6 +43,12 @@ namespace CrockPot.Controllers
             {
                 return NotFound();
             }
+
+            var comments = await _commentService.GetCommentsByRecipeIdAsync(recipe.Id);
+
+            var formattedComments = comments.Select(comment => $"{comment.AuthorId}: {comment.Content}").ToList();
+            ViewBag.Comments = formattedComments;
+
 
             return View(recipe);
         }

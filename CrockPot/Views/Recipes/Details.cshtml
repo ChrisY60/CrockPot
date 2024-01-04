@@ -65,6 +65,20 @@
         </dd>
     </dl>
 </div>
+
+<div>
+    <h4>Comments</h4>
+    <ul>
+        @foreach (var comment in ViewBag.Comments)
+        {
+            <li>@comment</li>
+        }
+    </ul>
+</div>
+
+<div>
+    <a asp-controller="Comments" asp-action="Create" asp-route-recipeId="@Model.Id">Add Comment</a>
+</div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>

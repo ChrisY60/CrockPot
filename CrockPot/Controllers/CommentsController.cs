@@ -16,10 +16,48 @@ namespace CrockPot.Controllers
             _commentService = commentService;
         }
 
-        public IActionResult Create()
+       public async Task<IActionResult> Index()
         {
+            var comments = await _commentService.GetCommentsAsync();
+            return View(comments);
+        }
+
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null || !_commentService.CommentExists(id.Value))
+            {
+                return NotFound();
+            }
+
+            var comment = await _commentService.GetCommentByIdAsync(id.Value);
+            if (comment == null)
+            {
+                return NotFound();
+            }
+
+            return View(comment);
+        }
+
+        public async Task<IActionResult> GetCommentsByRecipeId(int recipeId)
+        {
+            var comments = await _commentService.GetCommentsByRecipeIdAsync(recipeId);
+            return View("Index", comments); 
+        }
+
+        public async Task<IActionResult> GetCommentsByAuthorId()
+        {
+            var authorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var comments = await _commentService.GetCommentsByAuthorIdAsync(authorId);
+            return View("Index", comments); 
+        }
+
+
+        public IActionResult Create(int recipeId)
+        {
+            ViewBag.RecipeId = recipeId;
             return View();
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -35,6 +73,7 @@ namespace CrockPot.Controllers
 
             return View(comment);
         }
+
 
         public async Task<IActionResult> Edit(int id)
         {

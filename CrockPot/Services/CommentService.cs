@@ -82,7 +82,6 @@ namespace CrockPot.Services
             }
             catch (DbUpdateException)
             {
-                // Handle exceptions if needed
                 return false;
             }
         }
