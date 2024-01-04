@@ -32,8 +32,8 @@ a {
 .scrollable-container {
     border: 2px solid #68029c;
     border-radius: 5px;
-    width: 300px;
-    height: 100px;
+    width: 30vw;
+    height: 20vh;
     overflow-y: scroll;
 }
 
@@ -90,5 +90,6 @@ a {
     border-radius: 10px;
     background-color: #C67FD3;
     width: 40vw;
-    height: 70vh;
+    min-width:300px;
+    height: 90vh;
 }
