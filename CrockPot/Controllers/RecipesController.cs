@@ -4,6 +4,7 @@ using CrockPot.Models;
 using Microsoft.AspNetCore.Authorization;
 using CrockPot.Services.IServices;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 
 namespace CrockPot.Controllers
 {
@@ -14,12 +15,16 @@ namespace CrockPot.Controllers
         private readonly ICategoryService _categoryService;
         private readonly IIngredientService _ingredientService;
         private readonly ICommentService _commentService;
-        public RecipesController(IRecipeService recipeService, ICategoryService categoryService, IIngredientService ingredientService, ICommentService commentService)
+        private readonly UserManager<IdentityUser> _userManager;
+
+
+        public RecipesController(IRecipeService recipeService, ICategoryService categoryService, IIngredientService ingredientService, ICommentService commentService, UserManager<IdentityUser> userManager)
         {
             _recipeService = recipeService;
             _categoryService = categoryService;
             _ingredientService = ingredientService;
             _commentService = commentService;
+            _userManager = userManager;
         }
 
         public async Task<IActionResult> Index()
@@ -43,15 +48,29 @@ namespace CrockPot.Controllers
             {
                 return NotFound();
             }
+            
+            ViewBag.Author = await _userManager.FindByIdAsync(recipe.AuthorId);
+            if(ViewBag.Author == null)
+            {
+                ViewBag.Author = "Unknown";
+            }
 
             var comments = await _commentService.GetCommentsByRecipeIdAsync(recipe.Id);
 
-            var formattedComments = comments.Select(comment => $"{comment.AuthorId}: {comment.Content}").ToList();
-            ViewBag.Comments = formattedComments;
+            var formattedComments = new List<string>();
 
+            foreach (var comment in comments)
+            {
+                var author = await _userManager.FindByIdAsync(comment.AuthorId);
+                string authorName = author != null ? author.UserName : "Unknown";
+                formattedComments.Add($"{authorName}: {comment.Content}");
+            }
+
+            ViewBag.Comments = formattedComments;
 
             return View(recipe);
         }
+
 
         public IActionResult Create()
         {

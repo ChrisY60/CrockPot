@@ -37,20 +37,11 @@
                 }
             </ul>
         </dd>
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             <p>Author</p>
         </dt>
-
-        @{
-            var user = await _userManager.FindByIdAsync(Model.AuthorId);
-            string name = "Unknown";
-            if (user != null)
-            {
-                name = user.UserName;
-            }
-        }
-        <dd class = "col-sm-10">
-            @Html.Raw(name)
+        <dd class="col-sm-10">
+            @Html.Raw(ViewBag.Author)
         </dd>
         <dt class="col-sm-2">
             Categories
