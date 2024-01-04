@@ -10,8 +10,7 @@ namespace CrockPot.Models
         public string Description { get; set; }
         public ICollection<Ingredient>? Ingredients { get; set; } = new List<Ingredient>();
         public string? AuthorId { get; set; }
-        public ICollection<Category>? Categories { get; set; } = new List<Category>();
-        public ICollection<Comment>? Comments { get; set; } = new List<Comment>(); 
+        public ICollection<Category>? Categories { get; set; } = new List<Category>(); 
 
     }
 }

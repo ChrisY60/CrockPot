@@ -24,7 +24,6 @@ namespace CrockPot.Services
             return await _context.Recipes
                 .Include(r => r.Categories)
                 .Include(r => r.Ingredients)
-                .Include(r => r.Comments)
                 .FirstOrDefaultAsync(m => m.Id == id);
         }
 
