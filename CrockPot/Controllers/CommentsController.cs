@@ -54,7 +54,7 @@ namespace CrockPot.Controllers
 
         public IActionResult Create(int recipeId)
         {
-            ViewBag.RecipeId = recipeId;
+            ViewBag.RecipeIdComment = recipeId;
             return View();
         }
 
