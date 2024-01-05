@@ -60,9 +60,30 @@
     <h4>Average Rating</h4>
     <p>@ViewBag.AverageRating</p>
 </div>
+<h4>Rating</h4>
+<hr />
+
+<p>Current Rating: @ViewBag.AverageRating</p>
+
+@for (int i = 1; i <= 5; i++)
+{
+    if (i <= ViewBag.AverageRating)
+    {
+        <img src="~/images/star_checked.png" alt="Star" style="width: 3vw; height: auto;" />
+    }
+    else if (i - 0.5 <= ViewBag.AverageRating)
+    {
+        <img src="~/images/star_semi_checked.png" alt="Star" style="width: 3vw; height: auto;" />
+    }
+    else{
+        <img src="~/images/star.png" alt="Star" style="width: 3vw; height: auto;" />
+    }
+}
+
 <div>
     <a asp-controller="Ratings" asp-action="Create" asp-route-recipeId="@Model.Id">Add Rating</a>
 </div>
+
 <div>
     <h4>Comments</h4>
     <ul>
