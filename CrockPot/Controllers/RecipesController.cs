@@ -16,14 +16,16 @@ namespace CrockPot.Controllers
         private readonly IIngredientService _ingredientService;
         private readonly ICommentService _commentService;
         private readonly UserManager<IdentityUser> _userManager;
+        private readonly IRatingService _ratingService;
 
 
-        public RecipesController(IRecipeService recipeService, ICategoryService categoryService, IIngredientService ingredientService, ICommentService commentService, UserManager<IdentityUser> userManager)
+        public RecipesController(IRecipeService recipeService, ICategoryService categoryService, IIngredientService ingredientService, ICommentService commentService, UserManager<IdentityUser> userManager, IRatingService ratingService)
         {
             _recipeService = recipeService;
             _categoryService = categoryService;
             _ingredientService = ingredientService;
             _commentService = commentService;
+            _ratingService = ratingService;
             _userManager = userManager;
         }
 
@@ -67,6 +69,8 @@ namespace CrockPot.Controllers
             }
 
             ViewBag.Comments = formattedComments;
+
+            ViewBag.AverageRating = await _ratingService.GetAverageRatingByRecipeIdAsync(recipe.Id);
 
             return View(recipe);
         }

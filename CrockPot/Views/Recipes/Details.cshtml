@@ -57,6 +57,13 @@
 </div>
 
 <div>
+    <h4>Average Rating</h4>
+    <p>@ViewBag.AverageRating</p>
+</div>
+<div>
+    <a asp-controller="Ratings" asp-action="Create" asp-route-recipeId="@Model.Id">Add Rating</a>
+</div>
+<div>
     <h4>Comments</h4>
     <ul>
         @foreach (var comment in ViewBag.Comments)
@@ -69,6 +76,9 @@
 <div>
     <a asp-controller="Comments" asp-action="Create" asp-route-recipeId="@Model.Id">Add Comment</a>
 </div>
+
+
+
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
