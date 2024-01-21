@@ -3,6 +3,24 @@ using CrockPot.Services.IServices;
 using CrockPot.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
+using Azure.Identity;
+
+var blobServiceClient = new BlobServiceClient(
+        new Uri("https://crockpotblob2005.blob.core.windows.net"),
+        new DefaultAzureCredential());
+
+
+string containerName = "images";
+
+BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+if (!await containerClient.ExistsAsync())
+{
+    await containerClient.CreateAsync();
+}
+
 
 var builder = WebApplication.CreateBuilder(args);
 
