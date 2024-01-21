@@ -1,72 +1,72 @@
-using CrockPot.Data;
-using CrockPot.Services.IServices;
-using CrockPot.Services;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Azure.Storage.Blobs;
-using Azure.Storage.Blobs.Models;
-using Azure.Identity;
+    using CrockPot.Data;
+    using CrockPot.Services.IServices;
+    using CrockPot.Services;
+    using Microsoft.AspNetCore.Identity;
+    using Microsoft.EntityFrameworkCore;
+    using Azure.Storage.Blobs;
+    using Azure.Identity;
 
-var blobServiceClient = new BlobServiceClient(
-        new Uri("https://crockpotblob2005.blob.core.windows.net"),
-        new DefaultAzureCredential());
-
-
-string containerName = "images";
-
-BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName);
-
-if (!await containerClient.ExistsAsync())
-{
-    await containerClient.CreateAsync();
-}
+    var blobServiceClient = new BlobServiceClient(
+            new Uri("https://crockpotblob2005.blob.core.windows.net"),
+            new DefaultAzureCredential());
 
 
-var builder = WebApplication.CreateBuilder(args);
+    string containerName = "images";
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+    BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName);
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
-
-
-builder.Services.AddScoped<ICategoryService, CategoryService>();
-builder.Services.AddScoped<IIngredientService, IngredientService>();
-builder.Services.AddScoped<IRecipeService, RecipeService>();
-builder.Services.AddScoped<ICommentService, CommentService>();
-builder.Services.AddScoped<IRatingService, RatingService>();
-builder.Services.AddControllersWithViews();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseDeveloperExceptionPage();
-    app.UseMigrationsEndPoint();
-}
-else
-{
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
-}
-
-app.UseHttpsRedirection();
-app.UseStaticFiles();
-
-app.UseRouting();
-app.UseStaticFiles();
+    if (!await containerClient.ExistsAsync())
+    {
+        await containerClient.CreateAsync();
+    }
 
 
-app.UseAuthentication();
-app.UseAuthorization();
+    var builder = WebApplication.CreateBuilder(args);
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
-app.MapRazorPages();
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        options.UseSqlServer(connectionString));
+    builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-app.Run();
+    builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+        .AddEntityFrameworkStores<ApplicationDbContext>();
+
+
+    builder.Services.AddScoped<ICategoryService, CategoryService>();
+    builder.Services.AddScoped<IIngredientService, IngredientService>();
+    builder.Services.AddScoped<IRecipeService, RecipeService>();
+    builder.Services.AddScoped<ICommentService, CommentService>();
+    builder.Services.AddScoped<IRatingService, RatingService>();
+    builder.Services.AddScoped<IBlobService, BlobService>();
+    builder.Services.AddControllersWithViews();
+
+    var app = builder.Build();
+
+
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseDeveloperExceptionPage();
+        app.UseMigrationsEndPoint();
+    }
+    else
+    {
+        app.UseExceptionHandler("/Home/Error");
+        app.UseHsts();
+    }
+
+    app.UseHttpsRedirection();
+    app.UseStaticFiles();
+
+    app.UseRouting();
+    app.UseStaticFiles();
+
+
+    app.UseAuthentication();
+    app.UseAuthorization();
+
+    app.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=Home}/{action=Index}/{id?}");
+    app.MapRazorPages();
+
+    app.Run();

@@ -14,10 +14,13 @@
 
 @foreach (var item in Model)
 {
+    string imageSrc = string.IsNullOrEmpty(item.ImageUrl)
+    ? "https://crockpotblob2005.blob.core.windows.net/images/unknown_food.png"
+    : item.ImageUrl;
 
     <button class="display_box" onclick="window.location.href = '@Url.Action("Details", "Recipes")/' + @item.Id;">
         <div class="display_box_image">
-            <img src="~/Images/random_meal.png" />
+            <img src= "@imageSrc" />
         </div>
         <div>
             <span>Name: </span>

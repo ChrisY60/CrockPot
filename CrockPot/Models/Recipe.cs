@@ -12,7 +12,7 @@ namespace CrockPot.Models
         public string? AuthorId { get; set; }
         public ICollection<Category>? Categories { get; set; } = new List<Category>();
 
-        public string ImageUrl { get; set; }
+        public string? ImageUrl { get; set; }
 
     }
 }

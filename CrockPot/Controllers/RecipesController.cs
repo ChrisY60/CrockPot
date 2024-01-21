@@ -17,9 +17,10 @@ namespace CrockPot.Controllers
         private readonly ICommentService _commentService;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IRatingService _ratingService;
+        private readonly IBlobService _blobService;
 
 
-        public RecipesController(IRecipeService recipeService, ICategoryService categoryService, IIngredientService ingredientService, ICommentService commentService, UserManager<IdentityUser> userManager, IRatingService ratingService)
+        public RecipesController(IRecipeService recipeService, ICategoryService categoryService, IIngredientService ingredientService, ICommentService commentService, UserManager<IdentityUser> userManager, IRatingService ratingService, IBlobService blobService)
         {
             _recipeService = recipeService;
             _categoryService = categoryService;
@@ -27,6 +28,7 @@ namespace CrockPot.Controllers
             _commentService = commentService;
             _ratingService = ratingService;
             _userManager = userManager;
+            _blobService = blobService;
         }
 
         public async Task<IActionResult> Index()
@@ -86,12 +88,33 @@ namespace CrockPot.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description")] Recipe recipe, int[] selectedCategories, int[] selectedIngredients)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description")] Recipe recipe, int[] selectedCategories, int[] selectedIngredients, IFormFile imageFile)
         {
             recipe.AuthorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (ModelState.IsValid)
             {
+                if (imageFile != null && imageFile.Length > 0)
+                {
+                    var allowedExtensions = new[] { ".png", ".jpg", ".jpeg", ".svg"}; 
+
+                    var fileExtension = Path.GetExtension(imageFile.FileName).ToLower();
+
+                    if (allowedExtensions.Contains(fileExtension))
+                    {
+
+                        var imageUrl = await _blobService.UploadImageAsync(imageFile);
+                        recipe.ImageUrl = imageUrl;
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("Image", "Invalid file type. Please upload a PNG, JPG, JPEG or SVG image.");
+                        ViewBag.allCategories = await _categoryService.GetCategoriesAsync();
+                        ViewBag.allIngredients = await _ingredientService.GetIngredientsAsync();
+                        return View(recipe);
+                    }
+                }
+
                 await _recipeService.CreateRecipeAsync(recipe, selectedCategories, selectedIngredients);
                 return RedirectToAction(nameof(Index));
             }
@@ -101,6 +124,7 @@ namespace CrockPot.Controllers
 
             return View(recipe);
         }
+
 
         public async Task<IActionResult> Edit(int? id)
         {

@@ -10,7 +10,7 @@
 <h4>Recipe</h4>
 <hr>
 <div>
-    <form asp-action="Create">
+    <form asp-action="Create" method="post" enctype="multipart/form-data">
         <div asp-validation-summary="All" class="text-danger"></div>
         <div>
             <label asp-for="Name"></label>
@@ -56,6 +56,11 @@
             </div>
         </div>
         <br />
+
+        <div>
+            <label for="imageFile">Upload Image</label>
+            <input type="file" name="imageFile" accept="image/*" />
+        </div>
 
         <div>
             <input class="button-big" type="submit" value="Create" />
