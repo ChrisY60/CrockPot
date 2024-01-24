@@ -14,7 +14,7 @@ namespace CrockPot.Models
         public int Id
         {
             get { return _id; }
-            set { _id = value; }
+            private set { _id = value; }
         }
 
         public string AuthorId
