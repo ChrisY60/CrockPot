@@ -2,9 +2,33 @@
 {
     public class Comment
     {
-        public int Id { get; set; }
-        public int RecipeId { get; set; }
-        public string AuthorId { get; set; }
-        public string Content { get; set; }
+        private int _id;
+        private int _recipeId;
+        private string _authorId;
+        private string _content;
+
+        public int Id
+        {
+            get { return _id; }
+            set { _id = value; }
+        }
+
+        public int RecipeId
+        {
+            get { return _recipeId; }
+            set { _recipeId = value; }
+        }
+
+        public string AuthorId
+        {
+            get { return _authorId; }
+            set { _authorId = value; }
+        }
+
+        public string Content
+        {
+            get { return _content; }
+            set { _content = value; }
+        }
     }
 }
