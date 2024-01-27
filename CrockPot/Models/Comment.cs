@@ -7,6 +7,12 @@
         private string _authorId;
         private string _content;
 
+        public Comment(int recipeId, string content)
+        {
+            _recipeId = recipeId;
+            _content = content;
+        }
+
         public int Id
         {
             get { return _id; }
@@ -30,5 +36,7 @@
             get { return _content; }
             set { _content = value; }
         }
+
+        public int Content1 { get; }
     }
 }

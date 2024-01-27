@@ -96,11 +96,13 @@
     </ul>
 </div>
 
-<div>
-    <a asp-controller="Comments" asp-action="Create" asp-route-recipeId="@Model.Id">Add Comment</a>
-</div>
 
-
+<form asp-controller="Comments" asp-action="Create" method="post">
+    <input type="hidden" name="RecipeId" value="@Model.Id" />
+    <input name="Content" class="input-box" placeholder="Comment here">
+    
+    <button type="submit">Submit Comment</button>
+</form>
 
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |

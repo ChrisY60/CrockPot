@@ -52,17 +52,13 @@ namespace CrockPot.Controllers
         }
 
 
-        public IActionResult Create(int recipeId)
-        {
-            ViewBag.RecipeIdComment = recipeId;
-            return View();
-        }
 
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Comment comment)
+        public async Task<IActionResult> Create(int recipeId, string content)
         {
+            Comment comment = new Comment(recipeId, content);
             comment.AuthorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (ModelState.IsValid)
