@@ -1,53 +1,29 @@
 ﻿@model IEnumerable<CrockPot.Models.SharedRecipe>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Shared with me";
 }
 
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.SenderId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ReceiverId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.RecipeId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Timestamp)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.SenderId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ReceiverId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RecipeId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Timestamp)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+<h1>Recipes Shared With You</h1>
+@{
+    Dictionary<string, string> senderNames = ViewData["SenderNames"] as Dictionary<string, string>; ;
 }
-    </tbody>
-</table>
+
+@foreach (var item in Model)
+{
+    
+    <button class="display_box" onclick="window.location.href = 'Recipes/Details/' + @item.RecipeId;">
+        <div class="display_box_image">
+            @if (item.RecipeObject != null)
+            {
+                <img src="@item.RecipeObject.ImageUrl" alt="Recipe Image" />
+            }
+        </div>
+
+        <div class="display_box_content">
+            <p>Shared by: @senderNames[item.SenderId]</p>
+            <p>Recipe Name: @item.RecipeObject.Name</p>
+        </div>
+
+    </button>
+}

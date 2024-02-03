@@ -7,6 +7,8 @@
         private string _receiverId;
         private int _recipeId;
         private DateTime _timestamp;
+        public Recipe RecipeObject { get; set; }
+        
 
         public int Id
         {

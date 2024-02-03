@@ -34,9 +34,8 @@ namespace CrockPot.Controllers
         public async Task<IActionResult> Index()
         {
             var recipes = await _recipeService.GetRecipesAsync();
-            ViewBag.allCategories = await _categoryService.GetCategoriesAsync();
-            ViewBag.allIngredients = await _ingredientService.GetIngredientsAsync();
-
+            var authorsNames = await GetAuthorsNames(recipes);
+            ViewData["AuthorNames"] = authorsNames;
             return View(recipes);
         }
 
@@ -52,9 +51,9 @@ namespace CrockPot.Controllers
             {
                 return NotFound();
             }
-            
+
             ViewBag.Author = await _userManager.FindByIdAsync(recipe.AuthorId);
-            if(ViewBag.Author == null)
+            if (ViewBag.Author == null)
             {
                 ViewBag.Author = "Unknown";
             }
@@ -100,7 +99,7 @@ namespace CrockPot.Controllers
             {
                 if (imageFile != null && imageFile.Length > 0)
                 {
-                    var allowedExtensions = new[] { ".png", ".jpg", ".jpeg", ".svg"}; 
+                    var allowedExtensions = new[] { ".png", ".jpg", ".jpeg", ".svg" };
 
                     var fileExtension = Path.GetExtension(imageFile.FileName).ToLower();
 
@@ -239,6 +238,19 @@ namespace CrockPot.Controllers
         {
             var recipes = await _recipeService.GetAllRecipesByFilterAsync(name, selectedCategories, selectedIngredients);
             return View("Index", recipes);
+        }
+
+        public async Task<Dictionary<string, string>> GetAuthorsNames(List<Recipe>Recipes){
+            var authorsNames = new Dictionary<string, string>();
+
+            foreach(Recipe r in Recipes){
+                var authorUser = await _userManager.FindByIdAsync(r.AuthorId);
+                var authorName = authorUser?.UserName;
+
+                authorsNames[r.AuthorId] = authorName;
+            }
+
+            return authorsNames;
         }
 
 

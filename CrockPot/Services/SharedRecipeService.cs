@@ -29,7 +29,8 @@ namespace CrockPot.Services
         public async Task<List<SharedRecipe>> GetSharedRecipesByReceiverAsync(string receiverId)
         {
             return await _context.SharedRecipes
-                .Where(recipe => recipe.ReceiverId == receiverId)
+                .Include(sr => sr.RecipeObject)
+                .Where(sr => sr.ReceiverId == receiverId)
                 .ToListAsync();
         }
     }

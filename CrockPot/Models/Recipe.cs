@@ -11,6 +11,7 @@ namespace CrockPot.Models
         private string? _authorId;
         private ICollection<Category> _categories = new List<Category>();
         private string? _imageUrl;
+       
 
         [Key]
         public int Id

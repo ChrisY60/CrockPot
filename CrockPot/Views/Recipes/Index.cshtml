@@ -1,6 +1,5 @@
 ﻿@model IEnumerable<CrockPot.Models.Recipe>
 @using Microsoft.AspNetCore.Identity
-@inject UserManager<IdentityUser> _userManager
 
 @{
     ViewData["Title"] = "Recipes";
@@ -12,16 +11,22 @@
     <a asp-action="Create">Create New</a>
 </p>
 
+@{
+    var authorNames = ViewData["AuthorNames"] as Dictionary<string, string>;
+}
+
+
 @foreach (var item in Model)
 {
     string imageSrc = string.IsNullOrEmpty(item.ImageUrl)
-    ? "https://crockpotblob2005.blob.core.windows.net/images/unknown_food.png"
-    : item.ImageUrl;
+        ? "https://crockpotblob2005.blob.core.windows.net/images/unknown_food.png"
+        : item.ImageUrl;
 
     <button class="display_box" onclick="window.location.href = '@Url.Action("Details", "Recipes")/' + @item.Id;">
         <div class="display_box_image">
-            <img src= "@imageSrc" />
+            <img src="@imageSrc" />
         </div>
+
         <div>
             <span>Name: </span>
             @Html.Raw(Truncate(item.Name, 7))
@@ -34,15 +39,14 @@
             <br>
             <span>By: </span>
             @{
-                var user = await _userManager.FindByIdAsync(item.AuthorId);
                 string name = "Unknown";
-                if(user != null)
-                {
-                    name = user.UserName;
+                if (authorNames[item.AuthorId] != null){
+                    name = authorNames[item.AuthorId];
                 }
                 
+
             }
-            @Html.Raw(Truncate(name, 7))
+            @Html.Raw(name)
             <br>
             <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
             <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>

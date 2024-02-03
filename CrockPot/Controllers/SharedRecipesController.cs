@@ -30,7 +30,8 @@ namespace CrockPot.Controllers
                 return NotFound();
             }
             List<SharedRecipe> sharedRecipes = await _sharedRecipeService.GetSharedRecipesByReceiverAsync(currentUser.Id);
-
+            Dictionary<string, string> senderNames = await GetSenderNames(sharedRecipes);
+            ViewData["SenderNames"] = senderNames;
             return View(sharedRecipes);
         }
 
@@ -61,5 +62,21 @@ namespace CrockPot.Controllers
             }
             return NotFound();
         }
+
+        private async Task<Dictionary<string, string>> GetSenderNames(List<SharedRecipe> sharedRecipes)
+        {
+            var senderNames = new Dictionary<string, string>();
+
+            foreach (var sharedRecipe in sharedRecipes)
+            {
+                var senderUser = await _userManager.FindByIdAsync(sharedRecipe.SenderId);
+                var senderName = senderUser?.UserName;
+
+                senderNames[sharedRecipe.SenderId] = senderName;
+            }
+
+            return senderNames;
+        }
+
     }
 }
