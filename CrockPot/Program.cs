@@ -38,6 +38,7 @@
     builder.Services.AddScoped<ICommentService, CommentService>();
     builder.Services.AddScoped<IRatingService, RatingService>();
     builder.Services.AddScoped<IBlobService, BlobService>();
+    builder.Services.AddScoped<ISharedRecipeService, SharedRecipeService>();
     builder.Services.AddControllersWithViews();
 
     var app = builder.Build();

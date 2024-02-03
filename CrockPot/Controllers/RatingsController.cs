@@ -40,6 +40,7 @@ namespace CrockPot.Controllers
                 return NotFound();
             }
 
+           
             return View(rating);
         }
 

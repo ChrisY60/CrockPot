@@ -7,12 +7,11 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<h1>@Model.Name</h1>
+<hr>
 
-<div>
-    <h4>Recipe</h4>
-    <hr />
-    <dl class="row">
+<div style="display: flex">
+    <dl>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Name)
         </dt>
@@ -55,7 +54,10 @@
         </dd>
     </dl>
 
-    <img src=@Model.ImageUrl alt="Image" style="width: 20vw; height: auto;" />
+    <div>
+        <img src=@Model.ImageUrl alt="Image" style="width: 20vw; height: auto;" />
+    </div>
+
 </div>
 
 <div>
@@ -96,6 +98,32 @@
     </ul>
 </div>
 
+<div>
+    <h4>Share Recipe</h4>
+    <form asp-controller="SharedRecipes" asp-action="Create" method="post">
+        <input type="hidden" name="RecipeId" value="@Model.Id" />
+
+        <label for="ReceiverId">Select Receiver:</label>
+        <select name="ReceiverId" class="input-box" required>
+            <option value="">Select a User</option>
+            @if (ViewBag.AllUsers != null)
+            {
+                foreach (var user in ViewBag.AllUsers)
+                {
+                    <option value="@user.Id">@user.UserName</option>
+                }
+            }
+            else
+            {
+                <optin value="user.Id">"ne stana nomerut :)"</optin>
+            }
+            
+        </select>
+
+        <button type="submit">Share Recipe</button>
+    </form>
+</div>
+
 
 <form asp-controller="Comments" asp-action="Create" method="post">
     <input type="hidden" name="RecipeId" value="@Model.Id" />
@@ -103,6 +131,7 @@
     
     <button type="submit">Submit Comment</button>
 </form>
+
 
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |

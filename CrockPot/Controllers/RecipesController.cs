@@ -74,6 +74,10 @@ namespace CrockPot.Controllers
 
             ViewBag.AverageRating = await _ratingService.GetAverageRatingByRecipeIdAsync(recipe.Id);
 
+            var allUsers = await _userManager.Users.ToListAsync();
+            ViewBag.AllUsers = allUsers;
+
+
             return View(recipe);
         }
 
