@@ -6,7 +6,7 @@ using CrockPot.Services.IServices;
 
 namespace CrockPot.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class CategoriesController : Controller
     {
         private readonly ICategoryService _categoryService;

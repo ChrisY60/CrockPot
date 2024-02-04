@@ -194,6 +194,7 @@ namespace CrockPot.Controllers
             return View(recipe);
         }
 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || !_recipeService.RecipeExists(id.Value))
@@ -210,6 +211,7 @@ namespace CrockPot.Controllers
             return View(recipe);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

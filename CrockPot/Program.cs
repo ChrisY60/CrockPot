@@ -29,6 +29,7 @@
     builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
     builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+        .AddRoles<IdentityRole>()
         .AddEntityFrameworkStores<ApplicationDbContext>();
 
 
@@ -70,4 +71,35 @@
         pattern: "{controller=Home}/{action=Index}/{id?}");
     app.MapRazorPages();
 
-    app.Run();
+    using (var scope = app.Services.CreateScope()){
+        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        var roles = new[] { "Admin" };
+
+        foreach(var role in roles){
+            if(!await roleManager.RoleExistsAsync(role)) {
+                await roleManager.CreateAsync(new IdentityRole(role));
+            }
+        }
+    }
+
+using (var scope = app.Services.CreateScope())
+{
+    var email = "admin@crockpot.com";
+    var password = "AdminPassword1!";
+    
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
+    if(await userManager.FindByEmailAsync(email) == null)
+    {
+        var admin = new IdentityUser();
+
+        admin.Email = email;
+        admin.UserName = email;
+        admin.EmailConfirmed = true;
+
+        await userManager.CreateAsync(admin, password);
+
+        await userManager.AddToRoleAsync(admin, "Admin");
+    }
+
+}
+app.Run();

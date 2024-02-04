@@ -32,6 +32,8 @@ namespace CrockPot.Data
                 .WithMany(i => i.Recipes)
                 .UsingEntity(j => j.ToTable("RecipeIngredient"));
 
+
+
         }
 
 
