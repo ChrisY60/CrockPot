@@ -40,6 +40,7 @@
     builder.Services.AddScoped<IRatingService, RatingService>();
     builder.Services.AddScoped<IBlobService, BlobService>();
     builder.Services.AddScoped<ISharedRecipeService, SharedRecipeService>();
+    builder.Services.AddScoped<IEmailService, EmailService>();
     builder.Services.AddControllersWithViews();
 
     var app = builder.Build();
