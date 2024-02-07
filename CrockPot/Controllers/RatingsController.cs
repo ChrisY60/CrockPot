@@ -44,16 +44,12 @@ namespace CrockPot.Controllers
             return View(rating);
         }
 
-        public IActionResult Create(int recipeId)
-        {
-            ViewBag.RecipeIdRating = recipeId;
-            return View();
-        }
-
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,AuthorId,RecipeId,RatingValue")] Rating rating)
+        public async Task<IActionResult> Create(int recipeId, int ratingValue)
         {
+            Rating rating = new Rating(recipeId, ratingValue);
             rating.AuthorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (ModelState.IsValid)
             {

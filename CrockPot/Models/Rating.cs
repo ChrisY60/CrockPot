@@ -7,10 +7,15 @@ namespace CrockPot.Models
         private int _id;
         private string _authorId;
         private int _recipeId;
-
         [Range(1, 5, ErrorMessage = "Rating must be between 1 and 5.")]
         private int _ratingValue;
 
+        public Rating(int recipeId, int ratingValue)
+        {
+            _recipeId = recipeId;
+            _ratingValue = ratingValue;
+        }
+       
         public int Id
         {
             get { return _id; }

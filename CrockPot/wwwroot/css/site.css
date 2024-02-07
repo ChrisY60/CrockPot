@@ -106,25 +106,3 @@ a {
 
 
 
-
-
-#star-rating {
-    display: inline-flex;
-    background: transparent;
-    direction: rtl;
-}
-
-    #star-rating input[type="radio"] {
-        display: none;
-    }
-
-    #star-rating label {
-        display: block;
-        width: 20px;
-        height: 20px;
-        background: url('../Images/star.png') no-repeat;
-    }
-
-    #star-rating input[type="radio"]:checked ~ label {
-        background: url('../Images/star_checked.png') no-repeat;
-    }
