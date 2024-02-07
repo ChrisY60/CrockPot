@@ -54,10 +54,20 @@ namespace CrockPot.Services
 
         public async Task<bool> CreateRatingAsync(Rating rating)
         {
-            _context.Add(rating);
+            var existingRating = await _context.Ratings
+                .FirstOrDefaultAsync(r => r.AuthorId == rating.AuthorId && r.RecipeId == rating.RecipeId);
+
+            if (existingRating != null){
+                _context.Ratings.Remove(existingRating);
+            }
+
+            _context.Ratings.Add(rating);
+
             await _context.SaveChangesAsync();
+
             return true;
         }
+
 
         public async Task<bool> UpdateRatingAsync(Rating rating)
         {
