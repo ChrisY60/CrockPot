@@ -239,6 +239,8 @@ namespace CrockPot.Controllers
         public async Task<IActionResult> SearchByFilter(string name, int[] selectedCategories, int[] selectedIngredients)
         {
             var recipes = await _recipeService.GetAllRecipesByFilterAsync(name, selectedCategories, selectedIngredients);
+            var authorsNames = await GetAuthorsNames(recipes);
+            ViewData["AuthorNames"] = authorsNames;
             return View("Index", recipes);
         }
 
