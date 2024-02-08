@@ -10,6 +10,7 @@ namespace CrockPot.Services.IServices
         Task<List<Rating>> GetRatingsByRecipeIdAsync(int recipeId);
         Task<float> GetAverageRatingByRecipeIdAsync(int recipeId);
         Task<List<Rating>> GetRatingsByAuthorIdAsync(string authorId);
+        Task <List<(Recipe recipe, float averageRating)>> GetHighestRatedRecipesAsync();
         Task<Rating> GetRatingByIdAsync(int id);
         Task<bool> CreateRatingAsync(Rating rating);
         Task<bool> UpdateRatingAsync(Rating rating);

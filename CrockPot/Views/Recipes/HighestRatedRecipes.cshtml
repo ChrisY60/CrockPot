@@ -1,0 +1,19 @@
+﻿@{
+    ViewData["Title"] = "Highest Rated Recipes";
+}
+
+<h1>Highest Rated Recipes</h1>
+
+@if (ViewBag.HighestRatedRecipes != null)
+{
+    <ul>
+        @foreach (var tuple in ViewBag.HighestRatedRecipes)
+        {
+            <li>@tuple.Item1.Name - Average Rating: @tuple.Item2</li>
+        }
+    </ul>
+}
+else
+{
+    <p>No highest rated recipes available.</p>
+}

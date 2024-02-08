@@ -92,5 +92,22 @@ namespace CrockPot.Services
         {
             return _context.Ratings.Any(e => e.Id == id);
         }
+
+        public async Task<List<(Recipe recipe, float averageRating)>> GetHighestRatedRecipesAsync()
+        {
+            var recipes = await _context.Recipes.ToListAsync();
+            var topRatedRecipes = new List<(Recipe, float)>();
+
+            foreach (var recipe in recipes)
+            {
+                var averageRating = await GetAverageRatingByRecipeIdAsync(recipe.Id);
+                topRatedRecipes.Add((recipe, averageRating));
+            }
+
+            topRatedRecipes.Sort((x, y) => y.Item2.CompareTo(x.Item2));
+
+            return topRatedRecipes.Take(10).ToList();
+        }
+
     }
 }

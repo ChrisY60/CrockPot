@@ -244,6 +244,12 @@ namespace CrockPot.Controllers
             return View("Index", recipes);
         }
 
+        public async Task<IActionResult> HighestRatedRecipes()
+        {
+            ViewBag.HighestRatedRecipes = await _ratingService.GetHighestRatedRecipesAsync();
+            return View("HighestRatedRecipes");
+        }
+
         public async Task<Dictionary<string, string>> GetAuthorsNames(List<Recipe>Recipes){
             var authorsNames = new Dictionary<string, string>();
 
@@ -256,6 +262,7 @@ namespace CrockPot.Controllers
 
             return authorsNames;
         }
+
 
 
 
