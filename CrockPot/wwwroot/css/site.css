@@ -63,6 +63,9 @@ a {
     background-color: #C67FD3;
     width: 25vw;
     min-width: 300px;
+    height: 12.5vw;
+    min-height: 150px;
+
 }
 
     .display_box:hover {
@@ -85,7 +88,7 @@ a {
     min-width: 70px;
 }
 
-.main_page_ui_box {
+.ui_box {
     display: block;
     margin: 10px auto;
     padding: 20px;

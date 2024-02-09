@@ -56,7 +56,7 @@ namespace CrockPot.Controllers
             if (ViewBag.Author == null)
             {
                 ViewBag.Author = "Unknown";
-            }
+            } 
 
             var comments = await _commentService.GetCommentsByRecipeIdAsync(recipe.Id);
 
