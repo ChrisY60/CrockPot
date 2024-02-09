@@ -27,15 +27,12 @@
             <img src="@imageSrc" />
         </div>
 
-        <div>
+        <div class="display_box_text">
             <span>Name: </span>
             @Html.Raw(Truncate(item.Name, 7))
             <br>
             <span>Description: </span>
             @Html.Raw(Truncate(item.Description, 7))
-            <br>
-            <span>Ingredients: </span>
-            @Html.Raw(Truncate(string.Join(", ", item.Ingredients?.Select(i => i.Name)), 7))
             <br>
             <span>By: </span>
             @{
