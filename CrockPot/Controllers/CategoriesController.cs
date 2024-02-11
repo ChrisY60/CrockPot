@@ -39,7 +39,6 @@ namespace CrockPot.Controllers
             return View(category);
         }
 
-        // GET: Categories/Create
         public IActionResult Create()
         {
             return View();
@@ -48,8 +47,9 @@ namespace CrockPot.Controllers
         
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] Category category)
+        public async Task<IActionResult> Create(int Id, string Name)
         {
+            Category category = new Category(Id, Name);
             if (ModelState.IsValid)
             {
                 await _categoryService.CreateCategoryAsync(category);
@@ -60,14 +60,14 @@ namespace CrockPot.Controllers
 
 
         
-        public async Task<IActionResult> Edit(int id)
+        public async Task<IActionResult> Edit(int? id)
         {
-            if (_categoryService.GetCategoriesAsync == null)
+            if (id == null || !_categoryService.CategoryExists(id.Value))
             {
                 return NotFound();
             }
 
-            var category = await _categoryService.GetCategoryByIdAsync(id);
+            var category = await _categoryService.GetCategoryByIdAsync(id.Value);
             if (category == null)
             {
                 return NotFound();
@@ -77,12 +77,9 @@ namespace CrockPot.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Category category)
+        public async Task<IActionResult> Edit(int Id, string Name)
         {
-            if (id != category.Id)
-            {
-                return NotFound();
-            }
+            Category category = new Category(Id, Name);
 
             if (ModelState.IsValid)
             {
@@ -106,7 +103,6 @@ namespace CrockPot.Controllers
             return View(category);
         }
 
-        // GET: Categories/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _categoryService.GetCategoriesAsync == null)
@@ -124,7 +120,6 @@ namespace CrockPot.Controllers
             return View(category);
         }
 
-        // POST: Categories/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

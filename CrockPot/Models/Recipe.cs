@@ -12,7 +12,12 @@ namespace CrockPot.Models
         private ICollection<Category> _categories = new List<Category>();
         private string? _imageUrl;
        
-
+        public Recipe(int Id, string Name,string Description, string AuthorId) { 
+            _id = Id;
+            _name = Name;
+            _description = Description;
+            _authorId = AuthorId;
+        }
         [Key]
         public int Id
         {

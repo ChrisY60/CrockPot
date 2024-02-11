@@ -8,6 +8,12 @@ namespace CrockPot.Models
         private string _name;
         private ICollection<Recipe>? _recipes;
 
+        public Category(int id, string name)
+        {
+            Id = id;
+            Name = name;
+        }
+
         [Key]
         public int Id
         {

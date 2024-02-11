@@ -11,7 +11,7 @@ namespace CrockPot.Services
     {
         public async Task<bool> SendEmailAsync(string TargetAddress, string Subject, string HtmlContent)
         {
-            var apiKey = "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";
+            var apiKey = "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";
             var client = new SendGridClient(apiKey);
             var from = new EmailAddress("crockpot0206@gmail.com", "CrockPot");
             var subject = Subject;

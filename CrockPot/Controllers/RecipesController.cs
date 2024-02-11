@@ -91,9 +91,10 @@ namespace CrockPot.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description")] Recipe recipe, int[] selectedCategories, int[] selectedIngredients, IFormFile imageFile)
+        public async Task<IActionResult> Create(int Id, string Name, string Description, int[] selectedCategories, int[] selectedIngredients, IFormFile imageFile)
         {
-            recipe.AuthorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            string AuthorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Recipe recipe = new Recipe(Id, Name, Description, AuthorId);
 
             if (ModelState.IsValid)
             {
@@ -149,18 +150,15 @@ namespace CrockPot.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,AuthorId")] Recipe recipe, int[] selectedCategories, int[] selectedIngredients)
+        public async Task<IActionResult> Edit(int Id, string Name, string Description, string AuthorId, int[] selectedCategories, int[] selectedIngredients)
         {
-            if (id != recipe.Id)
-            {
-                return NotFound();
-            }
+            Recipe recipe = new Recipe(Id, Name, Description, AuthorId);
 
             if (ModelState.IsValid)
             {
                 try
                 {
-                    var existingRecipe = await _recipeService.GetRecipeByIdAsync(id);
+                    var existingRecipe = await _recipeService.GetRecipeByIdAsync(Id);
 
                     existingRecipe.Name = recipe.Name;
                     existingRecipe.Description = recipe.Description;
@@ -193,6 +191,7 @@ namespace CrockPot.Controllers
 
             return View(recipe);
         }
+
 
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)

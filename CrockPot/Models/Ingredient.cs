@@ -6,6 +6,12 @@
         private string _name;
         private ICollection<Recipe>? _recipes;
 
+        public Ingredient(int id, string name)
+        {
+            Id = id;
+            Name = name;
+        }
+
         public int Id
         {
             get { return _id; }

@@ -45,8 +45,9 @@ namespace CrockPot.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description")] Ingredient ingredient)
-        {
+        public async Task<IActionResult> Create(int Id, string Name) { 
+            Ingredient ingredient = new Ingredient(Id, Name);
+        
             if (ModelState.IsValid)
             {
                 await _ingredientService.CreateIngredientAsync(ingredient);
@@ -74,12 +75,9 @@ namespace CrockPot.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description")] Ingredient ingredient)
+        public async Task<IActionResult> Edit(int Id, string Name)
         {
-            if (id != ingredient.Id)
-            {
-                return NotFound();
-            }
+            Ingredient ingredient = new(Id, Name);
 
             if (ModelState.IsValid)
             {
@@ -98,7 +96,7 @@ namespace CrockPot.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index");
             }
 
             return View(ingredient);
