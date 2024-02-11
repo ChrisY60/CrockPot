@@ -40,13 +40,15 @@
                 if (authorNames[item.AuthorId] != null){
                     name = authorNames[item.AuthorId];
                 }
-                
-
             }
             @Html.Raw(name)
             <br>
-            <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-            <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            @if ((User.Identity.IsAuthenticated && User.Identity.Name == name) || User.IsInRole("Admin"))
+            {
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            }
+            
         </div>
         
     </button>

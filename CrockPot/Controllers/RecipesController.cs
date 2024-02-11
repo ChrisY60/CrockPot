@@ -123,8 +123,6 @@ namespace CrockPot.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewBag.allCategories = await _categoryService.GetCategoriesAsync();
-            ViewBag.allIngredients = await _ingredientService.GetIngredientsAsync();
 
             return View(recipe);
         }
@@ -142,6 +140,10 @@ namespace CrockPot.Controllers
             {
                 return NotFound();
             }
+            if (User.FindFirstValue(ClaimTypes.NameIdentifier) != recipe.AuthorId && !User.IsInRole("Admin"))
+            {
+                return StatusCode(403);
+            }
             ViewBag.allCategories = await _categoryService.GetCategoriesAsync();
             ViewBag.allIngredients = await _ingredientService.GetIngredientsAsync();
 
@@ -152,6 +154,10 @@ namespace CrockPot.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int Id, string Name, string Description, string AuthorId, int[] selectedCategories, int[] selectedIngredients)
         {
+            if (User.FindFirstValue(ClaimTypes.NameIdentifier) != AuthorId && !User.IsInRole("Admin"))
+            {
+                return StatusCode(403);
+            }
             Recipe recipe = new Recipe(Id, Name, Description, AuthorId);
 
             if (ModelState.IsValid)
@@ -185,18 +191,15 @@ namespace CrockPot.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-
-            ViewBag.allCategories = await _categoryService.GetCategoriesAsync();
-            ViewBag.allIngredients = await _ingredientService.GetIngredientsAsync();
-
             return View(recipe);
         }
 
 
-        [Authorize(Roles = "Admin")]
+        
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || !_recipeService.RecipeExists(id.Value))
+
+            if (id == null || !_recipeService.RecipeExists(id.Value) && !User.IsInRole("Admin"))
             {
                 return NotFound();
             }
@@ -206,15 +209,23 @@ namespace CrockPot.Controllers
             {
                 return NotFound();
             }
+            if (User.FindFirstValue(ClaimTypes.NameIdentifier) != recipe.AuthorId && !User.IsInRole("Admin"))
+            {
+                return StatusCode(403);
+            }
 
             return View(recipe);
         }
 
-        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            Recipe recipe = await _recipeService.GetRecipeByIdAsync(id);
+            if (User.FindFirstValue(ClaimTypes.NameIdentifier) != recipe.AuthorId && !User.IsInRole("Admin")) 
+            {
+                return StatusCode(403);
+            }
             if (_recipeService.RecipeExists(id))
             {
                 await _recipeService.DeleteRecipeAsync(id);
