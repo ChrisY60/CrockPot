@@ -38,6 +38,11 @@ namespace CrockPot.Services
             return await _context.Ratings.FindAsync(id);
         }
 
+        public async Task<Rating> GetUserRatingOnRecipeAsync(string userId, int recipeId)
+        {
+            return await _context.Ratings
+                .FirstOrDefaultAsync(r => r.AuthorId == userId && r.RecipeId == recipeId);
+        }
         public async Task<float> GetAverageRatingByRecipeIdAsync(int recipeId)
         {
             var ratings = await GetRatingsByRecipeIdAsync(recipeId);
@@ -50,7 +55,6 @@ namespace CrockPot.Services
 
             return 0;
         }
-
 
         public async Task<bool> CreateRatingAsync(Rating rating)
         {
@@ -67,7 +71,6 @@ namespace CrockPot.Services
 
             return true;
         }
-
 
         public async Task<bool> UpdateRatingAsync(Rating rating)
         {

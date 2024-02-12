@@ -84,11 +84,29 @@
 <br><br>
 <h4>Submit your rating</h4>
 <div style="display: flex;align-items: center;">
-    <button id="rating-1" class="rating-button" style="border: none;background: none;"> <img src="https://crockpotblob2005.blob.core.windows.net/images/star.png" alt="Star" style="width: 3vw; height: auto;" /></button>
-    <button id="rating-2" class="rating-button" style="border: none;background: none;"> <img src="https://crockpotblob2005.blob.core.windows.net/images/star.png" alt="Star" style="width: 3vw; height: auto;" /></button>
-    <button id="rating-3" class="rating-button" style="border: none;background: none;"> <img src="https://crockpotblob2005.blob.core.windows.net/images/star.png" alt="Star" style="width: 3vw; height: auto;" /></button>
-    <button id="rating-4" class="rating-button" style="border: none;background: none;"> <img src="https://crockpotblob2005.blob.core.windows.net/images/star.png" alt="Star" style="width: 3vw; height: auto;" /></button>
-    <button id="rating-5" class="rating-button" style="border: none;background: none;"> <img src="https://crockpotblob2005.blob.core.windows.net/images/star.png" alt="Star" style="width: 3vw; height: auto;" /></button>
+    @if(@ViewBag.CurrentRating != null){
+        @for (int i = 1; i <= 5; i++)
+        {
+            var buttonId = $"rating-{i}";
+            if (i <= ViewBag.CurrentRating.RatingValue)
+            {
+                <button id="@buttonId" class="rating-button" style="border: none;background: none;"> <img src="https://crockpotblob2005.blob.core.windows.net/images/star_checked.png" alt="Star" style="width: 3vw; height: auto;" /></button>
+            }
+            else
+            {
+                <button id="@buttonId" class="rating-button" style="border: none;background: none;"> <img src="https://crockpotblob2005.blob.core.windows.net/images/star.png" alt="Star" style="width: 3vw; height: auto;" /></button>
+            }
+        }
+
+    }
+    else
+    {
+        @for (int i = 1; i <= 5; i++)
+        {
+            var buttonId = $"rating-{i}";
+            <button id="@buttonId" class="rating-button" style="border: none;background: none;"> <img src="https://crockpotblob2005.blob.core.windows.net/images/star.png" alt="Star" style="width: 3vw; height: auto;" /></button>
+        }
+    }
 
     <form id="ratingForm" asp-controller="Ratings" asp-action="Create" method="post">
         <input type="hidden" name="RecipeId" value="@Model.Id" />

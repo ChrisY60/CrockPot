@@ -76,6 +76,8 @@ namespace CrockPot.Controllers
             var allUsers = await _userManager.Users.ToListAsync();
             ViewBag.AllUsers = allUsers;
 
+            var currentRating = await GetUserRatingOnRecipeAsync(recipe.Id);
+            ViewBag.CurrentRating = currentRating;
 
             return View(recipe);
         }
@@ -113,8 +115,6 @@ namespace CrockPot.Controllers
                     else
                     {
                         ModelState.AddModelError("Image", "Invalid file type. Please upload a PNG, JPG, JPEG or SVG image.");
-                        ViewBag.allCategories = await _categoryService.GetCategoriesAsync();
-                        ViewBag.allIngredients = await _ingredientService.GetIngredientsAsync();
                         return View(recipe);
                     }
                 }
@@ -273,6 +273,11 @@ namespace CrockPot.Controllers
             return authorsNames;
         }
 
+        public async Task<Rating> GetUserRatingOnRecipeAsync(int recipeId)
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            return await _ratingService.GetUserRatingOnRecipeAsync(userId, recipeId);
+        }
 
 
 
