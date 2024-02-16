@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using CrockPot.Models;
 using Microsoft.AspNetCore.Authorization;
 using CrockPot.Services.IServices;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System.Diagnostics;
 
 namespace CrockPot.Controllers
 {
@@ -47,7 +49,10 @@ namespace CrockPot.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(int Id, string Name) { 
             Ingredient ingredient = new Ingredient(Id, Name);
-        
+
+            if (!await _ingredientService.IsIngredientNameUniqueAsync(ingredient.Name)){
+                ModelState.AddModelError("Name", "An ingredient with that name already exists.");
+            }
             if (ModelState.IsValid)
             {
                 await _ingredientService.CreateIngredientAsync(ingredient);
@@ -79,22 +84,20 @@ namespace CrockPot.Controllers
         {
             Ingredient ingredient = new(Id, Name);
 
+            if (!await _ingredientService.IsIngredientNameUniqueAsync(ingredient.Name))
+            {
+                ModelState.AddModelError("Name", "An ingredient with that name already exists.");
+            }
+
             if (ModelState.IsValid)
             {
                 try
                 {
                     await _ingredientService.UpdateIngredientAsync(ingredient);
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateConcurrencyException ex)
                 {
-                    if (!_ingredientService.IngredientExists(ingredient.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    await ex.Entries.Single().ReloadAsync();
                 }
                 return RedirectToAction("Index");
             }
@@ -124,7 +127,7 @@ namespace CrockPot.Controllers
         {
             if (!_ingredientService.IngredientExists(id))
             {
-                return Problem("Entity set 'ApplicationDbContext.Ingredients' is null.");
+                return Problem("This ingredient does not exist");
             }
 
             await _ingredientService.DeleteIngredientAsync(id);

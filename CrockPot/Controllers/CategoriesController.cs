@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using CrockPot.Models;
 using Microsoft.AspNetCore.Authorization;
 using CrockPot.Services.IServices;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System.Diagnostics;
 
 namespace CrockPot.Controllers
 {
@@ -24,7 +26,7 @@ namespace CrockPot.Controllers
 
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _categoryService.GetCategoriesAsync == null)
+            if (id == null || _categoryService.CategoryExists(id.Value))
             {
                 return NotFound();
             }
@@ -50,6 +52,11 @@ namespace CrockPot.Controllers
         public async Task<IActionResult> Create(int Id, string Name)
         {
             Category category = new Category(Id, Name);
+
+            if(!await _categoryService.IsCategoryNameUniqueAsync(category.Name)){
+                ModelState.AddModelError("Name", "A category with this name already exists.");
+            }
+
             if (ModelState.IsValid)
             {
                 await _categoryService.CreateCategoryAsync(category);
@@ -81,22 +88,20 @@ namespace CrockPot.Controllers
         {
             Category category = new Category(Id, Name);
 
+            if (!await _categoryService.IsCategoryNameUniqueAsync(category.Name))
+            {
+                ModelState.AddModelError("Name", "A category with this name already exists.");
+            }
+
             if (ModelState.IsValid)
             {
                 try
                 {
                     await _categoryService.UpdateCategoryAsync(category);
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (DbUpdateConcurrencyException ex)
                 {
-                    if (!CategoryExists(category.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    await ex.Entries.Single().ReloadAsync();
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -105,7 +110,7 @@ namespace CrockPot.Controllers
 
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _categoryService.GetCategoriesAsync == null)
+            if (id == null || _categoryService.CategoryExists(id.Value))
             {
                 return NotFound();
             }
@@ -114,6 +119,7 @@ namespace CrockPot.Controllers
             var category = categories.FirstOrDefault(m => m.Id == id);
             if (category == null)
             {
+                Debug.WriteLine("Got here");
                 return NotFound();
             }
 
@@ -126,16 +132,12 @@ namespace CrockPot.Controllers
         {
             if (_categoryService.GetCategoriesAsync == null)
             {
-                return Problem("Entity set 'ApplicationDbContext.Categories'  is null.");
+                return Problem("This category does not exist");
             }
             await _categoryService.DeleteCategoryAsync(id);
 
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CategoryExists(int id)
-        {
-            return _categoryService.CategoryExists(id);
-        }
     }
 }

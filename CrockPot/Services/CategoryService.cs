@@ -54,5 +54,10 @@ namespace CrockPot.Services
         {
             return _context.Categories.Any(e => e.Id == id);
         }
+
+        public async Task<bool> IsCategoryNameUniqueAsync(string name)
+        {
+            return await _context.Categories.AllAsync(c => c.Name != name);
+        }
     }
 }

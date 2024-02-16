@@ -11,6 +11,9 @@ namespace CrockPot.Services.IServices
         Task<bool> CreateIngredientAsync(Ingredient ingredient);
         Task<bool> UpdateIngredientAsync(Ingredient ingredient);
         Task<bool> DeleteIngredientAsync(int id);
+
+        Task<bool> IsIngredientNameUniqueAsync(string name);
+
         bool IngredientExists(int id);
     }
 }
