@@ -110,16 +110,14 @@ namespace CrockPot.Controllers
 
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _categoryService.CategoryExists(id.Value))
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var categories = await _categoryService.GetCategoriesAsync();
-            var category = categories.FirstOrDefault(m => m.Id == id);
+            var category = await _categoryService.GetCategoryByIdAsync(id.Value);
             if (category == null)
             {
-                Debug.WriteLine("Got here");
                 return NotFound();
             }
 
@@ -130,14 +128,18 @@ namespace CrockPot.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_categoryService.GetCategoriesAsync == null)
+            if (!_categoryService.CategoryExists(id))
             {
-                return Problem("This category does not exist");
+                return NotFound();
             }
+
             await _categoryService.DeleteCategoryAsync(id);
 
             return RedirectToAction(nameof(Index));
         }
+
+
+
 
     }
 }
