@@ -26,28 +26,50 @@ namespace CrockPot.Services
 
         public async Task<bool> CreateCategoryAsync(Category category)
         {
-            _context.Add(category);
-            await _context.SaveChangesAsync();
-            return true;
+            try
+            {
+                _context.Add(category);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateException)
+            {
+                return false;
+            }
         }
+
 
         public async Task<bool> UpdateCategoryAsync(Category category)
         {
-            _context.Update(category);
-            await _context.SaveChangesAsync();
-            return true;
+            try
+            {
+                _context.Update(category);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateException)
+            {
+                return false;
+            }
         }
 
         public async Task<bool> DeleteCategoryAsync(int id)
         {
-            var category = await _context.Categories.FindAsync(id);
-            if (category != null)
+            try
             {
-                _context.Categories.Remove(category);
-                await _context.SaveChangesAsync();
-                return true;
+                var category = await _context.Categories.FindAsync(id);
+                if (category != null)
+                {
+                    _context.Categories.Remove(category);
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+                return false;
             }
-            return false;
+            catch (DbUpdateException)
+            {
+                return false;
+            }
         }
 
         public bool CategoryExists(int id)

@@ -26,29 +26,51 @@ namespace CrockPot.Services
 
         public async Task<bool> CreateIngredientAsync(Ingredient ingredient)
         {
-            _context.Add(ingredient);
-            await _context.SaveChangesAsync();
-            return true;
+            try
+            {
+                _context.Add(ingredient);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateException)
+            {
+                return false;
+            }
         }
 
         public async Task<bool> UpdateIngredientAsync(Ingredient ingredient)
         {
-            _context.Update(ingredient);
-            await _context.SaveChangesAsync();
-            return true;
+            try
+            {
+                _context.Update(ingredient);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateException)
+            {
+                return false;
+            }
         }
 
         public async Task<bool> DeleteIngredientAsync(int id)
         {
-            var ingredient = await _context.Ingredients.FindAsync(id);
-            if (ingredient != null)
+            try
             {
-                _context.Ingredients.Remove(ingredient);
-                await _context.SaveChangesAsync();
-                return true;
+                var ingredient = await _context.Ingredients.FindAsync(id);
+                if (ingredient != null)
+                {
+                    _context.Ingredients.Remove(ingredient);
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+                return false;
             }
-            return false;
+            catch (DbUpdateException)
+            {
+                return false;
+            }
         }
+
 
         public bool IngredientExists(int id)
         {

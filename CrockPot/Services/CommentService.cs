@@ -47,8 +47,9 @@ namespace CrockPot.Services
                 await _context.SaveChangesAsync();
                 return true;
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException ex)
             {
+                Console.WriteLine($"Error occurred while creating comment: {ex.Message}");
                 return false;
             }
         }
@@ -61,8 +62,9 @@ namespace CrockPot.Services
                 await _context.SaveChangesAsync();
                 return true;
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException ex)
             {
+                Console.WriteLine($"Error occurred while updating comment: {ex.Message}");
                 return false;
             }
         }
@@ -80,8 +82,9 @@ namespace CrockPot.Services
                 }
                 return false;
             }
-            catch (DbUpdateException)
+            catch (DbUpdateException ex)
             {
+                Console.WriteLine($"Error occurred while deleting comment: {ex.Message}");
                 return false;
             }
         }

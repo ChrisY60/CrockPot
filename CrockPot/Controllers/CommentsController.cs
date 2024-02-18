@@ -2,6 +2,7 @@
 using CrockPot.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 using System.Security.Claims;
 
 namespace CrockPot.Controllers
@@ -52,8 +53,6 @@ namespace CrockPot.Controllers
         }
 
 
-
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(int recipeId, string content)
@@ -84,15 +83,17 @@ namespace CrockPot.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Comment comment)
+        public async Task<IActionResult> Edit(int id, string content)
         {
-            if (id != comment.Id)
+            Debug.Write("Content : ");
+            Debug.WriteLine(content);
+            Comment comment = await _commentService.GetCommentByIdAsync(id);
+            if(comment == null)
             {
                 return NotFound();
             }
-
-            comment.AuthorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
+            comment.Content = content;
+            
             if (ModelState.IsValid)
             {
                 await _commentService.UpdateCommentAsync(comment);

@@ -46,27 +46,33 @@ namespace CrockPot.Controllers
             return View();
         }
 
-        
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(int Id, string Name)
         {
             Category category = new Category(Id, Name);
 
-            if(!await _categoryService.IsCategoryNameUniqueAsync(category.Name)){
+            if (!await _categoryService.IsCategoryNameUniqueAsync(category.Name))
+            {
                 ModelState.AddModelError("Name", "A category with this name already exists.");
             }
 
             if (ModelState.IsValid)
             {
-                await _categoryService.CreateCategoryAsync(category);
+                var result = await _categoryService.CreateCategoryAsync(category);
+                if (!result)
+                {
+                    ModelState.AddModelError(string.Empty, "Failed to create the category. Please try again.");
+                    return View(category);
+                }
                 return RedirectToAction(nameof(Index));
             }
             return View(category);
         }
 
 
-        
+
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || !_categoryService.CategoryExists(id.Value))
@@ -95,16 +101,16 @@ namespace CrockPot.Controllers
 
             if (ModelState.IsValid)
             {
-                try
+                var result = await _categoryService.UpdateCategoryAsync(category);
+                if (!result)
                 {
-                    await _categoryService.UpdateCategoryAsync(category);
+                    ModelState.AddModelError(string.Empty, "Failed to update the category. Please try again.");
+                    return View(category);
                 }
-                catch (DbUpdateConcurrencyException ex)
-                {
-                    await ex.Entries.Single().ReloadAsync();
-                }
+
                 return RedirectToAction(nameof(Index));
             }
+
             return View(category);
         }
 
@@ -133,13 +139,13 @@ namespace CrockPot.Controllers
                 return NotFound();
             }
 
-            await _categoryService.DeleteCategoryAsync(id);
+            var result = await _categoryService.DeleteCategoryAsync(id);
+            if (!result)
+            {
+                return BadRequest("Failed to delete the category. Please try again.");
+            }
 
             return RedirectToAction(nameof(Index));
         }
-
-
-
-
     }
 }

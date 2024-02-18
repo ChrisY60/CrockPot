@@ -47,21 +47,28 @@ namespace CrockPot.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(int Id, string Name) { 
+        public async Task<IActionResult> Create(int Id, string Name)
+        {
             Ingredient ingredient = new Ingredient(Id, Name);
 
-            if (!await _ingredientService.IsIngredientNameUniqueAsync(ingredient.Name)){
+            if (!await _ingredientService.IsIngredientNameUniqueAsync(ingredient.Name))
+            {
                 ModelState.AddModelError("Name", "An ingredient with that name already exists.");
             }
             if (ModelState.IsValid)
             {
-                await _ingredientService.CreateIngredientAsync(ingredient);
+                var result = await _ingredientService.CreateIngredientAsync(ingredient);
+                if (!result)
+                {
+                    ModelState.AddModelError(string.Empty, "Failed to create the ingredient. Please try again.");
+                    return View(ingredient);
+                }
                 return RedirectToAction(nameof(Index));
             }
 
             return View(ingredient);
         }
-
+        
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || !_ingredientService.IngredientExists(id.Value))
@@ -91,14 +98,13 @@ namespace CrockPot.Controllers
 
             if (ModelState.IsValid)
             {
-                try
+                var result = await _ingredientService.UpdateIngredientAsync(ingredient);
+                if (!result)
                 {
-                    await _ingredientService.UpdateIngredientAsync(ingredient);
+                    ModelState.AddModelError(string.Empty, "Failed to update the ingredient. Please try again.");
+                    return View(ingredient);
                 }
-                catch (DbUpdateConcurrencyException ex)
-                {
-                    await ex.Entries.Single().ReloadAsync();
-                }
+                
                 return RedirectToAction("Index");
             }
 
@@ -125,13 +131,18 @@ namespace CrockPot.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            Debug.WriteLine("Got here 1 :)");
             if (!_ingredientService.IngredientExists(id))
             {
-                return Problem("This ingredient does not exist");
+                return NotFound();
             }
 
-            await _ingredientService.DeleteIngredientAsync(id);
-
+            var result = await _ingredientService.DeleteIngredientAsync(id);
+            if (!result)
+            {
+                return BadRequest("Failed to delete the ingredient. Please try again.");
+            }
+            Debug.WriteLine("Got here 3 :)");
             return RedirectToAction(nameof(Index));
         }
     }
