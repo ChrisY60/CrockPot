@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 using CrockPot.Services.IServices;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
+using CrockPot.ViewModels;
+using System.Diagnostics;
 
 namespace CrockPot.Controllers
 {
@@ -83,119 +85,122 @@ namespace CrockPot.Controllers
         }
 
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewBag.allCategories = _categoryService.GetCategoriesAsync().Result;
-            ViewBag.allIngredients = _ingredientService.GetIngredientsAsync().Result;
-
-            return View();
+            var viewModel = new CreateRecipeViewModel
+            {
+                AllCategories = await _categoryService.GetCategoriesAsync(),
+                AllIngredients = await _ingredientService.GetIngredientsAsync()
+            };
+            return View(viewModel);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(int Id, string Name, string Description, int[] selectedCategories, int[] selectedIngredients, IFormFile imageFile)
+        public async Task<IActionResult> Create(CreateRecipeViewModel viewModel)
         {
-            string AuthorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            Recipe recipe = new Recipe(Id, Name, Description, AuthorId);
+            string authorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Recipe recipe = new Recipe
+            {
+                Name = viewModel.Name,
+                Description = viewModel.Description,
+                AuthorId = authorId,
+            };
 
             if (ModelState.IsValid)
             {
-                if (imageFile != null && imageFile.Length > 0)
+                if (viewModel.ImageFile != null)
                 {
                     var allowedExtensions = new[] { ".png", ".jpg", ".jpeg", ".svg" };
 
-                    var fileExtension = Path.GetExtension(imageFile.FileName).ToLower();
+                    var fileExtension = Path.GetExtension(viewModel.ImageFile.FileName).ToLower();
 
                     if (allowedExtensions.Contains(fileExtension))
                     {
-
-                        var imageUrl = await _blobService.UploadImageAsync(imageFile);
+                        var imageUrl = await _blobService.UploadImageAsync(viewModel.ImageFile);
                         recipe.ImageUrl = imageUrl;
                     }
                     else
                     {
-                        ModelState.AddModelError("Image", "Invalid file type. Please upload a PNG, JPG, JPEG or SVG image.");
-                        return View(recipe);
+                        ModelState.AddModelError("Image", "Invalid file type. Please upload a PNG, JPG, JPEG, or SVG image.");
+                        return View(viewModel);
                     }
                 }
 
-                await _recipeService.CreateRecipeAsync(recipe, selectedCategories, selectedIngredients);
+                var result = await _recipeService.CreateRecipeAsync(recipe, viewModel.SelectedCategories, viewModel.SelectedIngredients);
+                if (!result)
+                {
+                    ModelState.AddModelError(string.Empty, "Failed to create the recipe. Please try again.");
+                    return View(viewModel);
+                }
+
                 return RedirectToAction(nameof(Index));
             }
-
-
-            return View(recipe);
+            viewModel.AllCategories = await _categoryService.GetCategoriesAsync();
+            viewModel.AllIngredients = await _ingredientService.GetIngredientsAsync();
+            return View(viewModel);
         }
 
 
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
-            if (id == null || !_recipeService.RecipeExists(id.Value))
-            {
-                return NotFound();
-            }
+            var recipe = await _recipeService.GetRecipeByIdAsync(id);
+            var categories = await _categoryService.GetCategoriesAsync();
+            var ingredients = await _ingredientService.GetIngredientsAsync();
 
-            var recipe = await _recipeService.GetRecipeByIdAsync(id.Value);
-            if (recipe == null)
+            var viewModel = new EditRecipeViewModel
             {
-                return NotFound();
-            }
-            if (User.FindFirstValue(ClaimTypes.NameIdentifier) != recipe.AuthorId && !User.IsInRole("Admin"))
-            {
-                return StatusCode(403);
-            }
-            ViewBag.allCategories = await _categoryService.GetCategoriesAsync();
-            ViewBag.allIngredients = await _ingredientService.GetIngredientsAsync();
+                Id = recipe.Id,
+                Name = recipe.Name,
+                Description = recipe.Description,
+                SelectedCategories = recipe.Categories.Select(c => c.Id).ToArray(),
+                SelectedIngredients = recipe.Ingredients.Select(i => i.Id).ToArray(),
+                AllCategories = categories,
+                AllIngredients = ingredients
+            };
 
-            return View(recipe);
+            return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int Id, string Name, string Description, string AuthorId, int[] selectedCategories, int[] selectedIngredients)
+        public async Task<IActionResult> Edit(EditRecipeViewModel viewModel)
         {
-            if (User.FindFirstValue(ClaimTypes.NameIdentifier) != AuthorId && !User.IsInRole("Admin"))
-            {
-                return StatusCode(403);
-            }
-            Recipe recipe = new Recipe(Id, Name, Description, AuthorId);
-
             if (ModelState.IsValid)
             {
-                try
+                var recipe = await _recipeService.GetRecipeByIdAsync(viewModel.Id);
+                if (recipe == null)
                 {
-                    var existingRecipe = await _recipeService.GetRecipeByIdAsync(Id);
-
-                    existingRecipe.Name = recipe.Name;
-                    existingRecipe.Description = recipe.Description;
-                    existingRecipe.AuthorId = recipe.AuthorId;
-
-                    var categories = await _categoryService.GetCategoriesAsync();
-                    existingRecipe.Categories = categories.Where(c => selectedCategories.Contains(c.Id)).ToList();
-
-                    var ingredients = await _ingredientService.GetIngredientsAsync();
-                    existingRecipe.Ingredients = ingredients.Where(i => selectedIngredients.Contains(i.Id)).ToList();
-
-                    await _recipeService.UpdateRecipeAsync(existingRecipe);
+                    return NotFound();
                 }
-                catch (DbUpdateConcurrencyException)
+
+                recipe.Name = viewModel.Name;
+                recipe.Description = viewModel.Description;
+
+                var categories = await _categoryService.GetCategoriesAsync();
+                recipe.Categories = categories.Where(c => viewModel.SelectedCategories.Contains(c.Id)).ToList();
+
+                var ingredients = await _ingredientService.GetIngredientsAsync();
+                recipe.Ingredients = ingredients.Where(i => viewModel.SelectedIngredients.Contains(i.Id)).ToList();
+
+                var result = await _recipeService.UpdateRecipeAsync(recipe);
+                if (!result)
                 {
-                    if (!_recipeService.RecipeExists(recipe.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    ModelState.AddModelError(string.Empty, "Failed to update the recipe. Please try again.");
+                    return View(viewModel);
                 }
+
                 return RedirectToAction(nameof(Index));
             }
-            return View(recipe);
+            Debug.WriteLine("Something went wrong");
+            viewModel.AllIngredients = await _ingredientService.GetIngredientsAsync();
+            viewModel.AllCategories = await _categoryService.GetCategoriesAsync();
+            return View(viewModel);
         }
 
 
-        
+
         public async Task<IActionResult> Delete(int? id)
         {
 
@@ -222,23 +227,22 @@ namespace CrockPot.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             Recipe recipe = await _recipeService.GetRecipeByIdAsync(id);
-            if (User.FindFirstValue(ClaimTypes.NameIdentifier) != recipe.AuthorId && !User.IsInRole("Admin")) 
+            if (User.FindFirstValue(ClaimTypes.NameIdentifier) != recipe.AuthorId && !User.IsInRole("Admin"))
             {
                 return StatusCode(403);
             }
+
             if (_recipeService.RecipeExists(id))
             {
-                await _recipeService.DeleteRecipeAsync(id);
+                var result = await _recipeService.DeleteRecipeAsync(id);
+                if (!result)
+                {
+                    return BadRequest("Failed to delete the recipe. Please try again.");
+                }
             }
 
             return RedirectToAction(nameof(Index));
         }
-
-        private bool RecipeExists(int id)
-        {
-            return _recipeService.RecipeExists(id);
-        }
-
 
         public async Task<IActionResult> RecipeSearch()
         {

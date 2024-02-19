@@ -131,7 +131,6 @@ namespace CrockPot.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            Debug.WriteLine("Got here 1 :)");
             if (!_ingredientService.IngredientExists(id))
             {
                 return NotFound();
@@ -142,7 +141,6 @@ namespace CrockPot.Controllers
             {
                 return BadRequest("Failed to delete the ingredient. Please try again.");
             }
-            Debug.WriteLine("Got here 3 :)");
             return RedirectToAction(nameof(Index));
         }
     }

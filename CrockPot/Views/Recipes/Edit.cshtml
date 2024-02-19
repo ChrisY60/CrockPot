@@ -1,4 +1,4 @@
-﻿@model CrockPot.Models.Recipe
+﻿@model CrockPot.ViewModels.EditRecipeViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -11,8 +11,8 @@
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" value=@Model.Id />
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
             <div class="form-group">
                 <label asp-for="Name" class="control-label"></label>
                 <input asp-for="Name" class="form-control" />
@@ -28,29 +28,24 @@
                 <br>
                 <input class="input-box" type="text" placeholder="Search..." id="ingredientsSearch">
                 <div class="scrollable-container">
-                    @foreach (var ingredient in ViewBag.allIngredients)
+                    @foreach (var ingredient in Model.AllIngredients)
                     {
                         <div>
-                            <input type="checkbox" name="selectedIngredients" value="@ingredient.Id" @(Model.Ingredients.Any(i => i.Id == ingredient.Id) ? "checked" : "")>
+                            <input type="checkbox" name="SelectedIngredients" value="@ingredient.Id" @(Model.SelectedIngredients != null && Model.SelectedIngredients.Contains(ingredient.Id) ? "checked" : "")>
                             <label>@ingredient.Name</label>
                         </div>
                     }
                 </div>
             </div>
             <div class="form-group">
-                <label asp-for="AuthorId" class="control-label"></label>
-                <input asp-for="AuthorId" class="form-control" />
-                <span asp-validation-for="AuthorId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
                 <label>Select Categories</label>
                 <br />
                 <input class="input-box" type="text" placeholder="Search..." id="categoriesSearch">
                 <div class="scrollable-container">
-                    @foreach (var category in ViewBag.allCategories)
+                    @foreach (var category in Model.AllCategories)
                     {
                         <div>
-                            <input type="checkbox" name="selectedCategories" value="@category.Id" @(Model.Categories.Any(c => c.Id == category.Id) ? "checked" : "")>
+                            <input type="checkbox" name="SelectedCategories" value="@category.Id" @(Model.SelectedCategories != null && Model.SelectedCategories.Contains(category.Id) ? "checked" : "")>
                             <label>@category.Name</label>
                         </div>
                     }
@@ -76,7 +71,7 @@
     <script>
         function filterCategoriesCheckboxes() {
             var searchCategoryValue = document.getElementById("categoriesSearch").value.toLowerCase();
-            var categoryCheckboxes = document.querySelectorAll('input[name="selectedCategories"]');
+            var categoryCheckboxes = document.querySelectorAll('input[name="SelectedCategories"]');
 
             categoryCheckboxes.forEach(function (checkbox) {
                 var label = checkbox.nextElementSibling;
@@ -92,7 +87,7 @@
 
         function filterIngredientsCheckboxes() {
             var searchIngredientValue = document.getElementById("ingredientsSearch").value.toLowerCase();
-            var ingredientCheckboxes = document.querySelectorAll('input[name="selectedIngredients"]');
+            var ingredientCheckboxes = document.querySelectorAll('input[name="SelectedIngredients"]');
 
             ingredientCheckboxes.forEach(function (checkbox) {
                 var label = checkbox.nextElementSibling;

@@ -29,38 +29,60 @@ namespace CrockPot.Services
 
         public async Task<bool> CreateRecipeAsync(Recipe recipe, int[] selectedCategories, int[] selectedIngredients)
         {
-            if (selectedCategories != null)
+            try
             {
-                recipe.Categories = _context.Categories.Where(c => selectedCategories.Contains(c.Id)).ToList();
-            }
+                if (selectedCategories != null)
+                {
+                    recipe.Categories = await _context.Categories.Where(c => selectedCategories.Contains(c.Id)).ToListAsync();
+                }
 
-            if (selectedIngredients != null)
+                if (selectedIngredients != null)
+                {
+                    recipe.Ingredients = await _context.Ingredients.Where(i => selectedIngredients.Contains(i.Id)).ToListAsync();
+                }
+
+                _context.Add(recipe);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateException)
             {
-                recipe.Ingredients = _context.Ingredients.Where(i => selectedIngredients.Contains(i.Id)).ToList();
+                return false;
             }
-
-            _context.Add(recipe);
-            await _context.SaveChangesAsync();
-            return true;
         }
 
         public async Task<bool> UpdateRecipeAsync(Recipe recipe)
         {
-            _context.Update(recipe);
-            await _context.SaveChangesAsync();
-            return true;
-        }
-
-        public async Task<bool> DeleteRecipeAsync(int id)
-        {
-            var recipe = await _context.Recipes.FindAsync(id);
-            if (recipe != null)
+            try
             {
-                _context.Recipes.Remove(recipe);
+                _context.Update(recipe);
                 await _context.SaveChangesAsync();
                 return true;
             }
-            return false;
+            catch (DbUpdateException)
+            {
+                return false;
+            }
+        }
+
+
+        public async Task<bool> DeleteRecipeAsync(int id)
+        {
+            try
+            {
+                var recipe = await _context.Recipes.FindAsync(id);
+                if (recipe != null)
+                {
+                    _context.Recipes.Remove(recipe);
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+                return false;
+            }
+            catch (DbUpdateException)
+            {
+                return false;
+            }
         }
 
         public bool RecipeExists(int id)

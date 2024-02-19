@@ -1,4 +1,4 @@
-﻿@model CrockPot.Models.Recipe
+﻿@model CrockPot.ViewModels.CreateRecipeViewModel
 @using CrockPot.Data
 
 @{
@@ -31,10 +31,10 @@
             <br>
             <input class="input-box" type="text" placeholder="Search..." id="ingredientsSearch">
             <div class="scrollable-container">
-                @foreach (var ingredient in ViewBag.allIngredients)
+                @foreach (var ingredient in Model.AllIngredients)
                 {
                     <div>
-                        <input type="checkbox" name="selectedIngredients" value="@ingredient.Id">
+                        <input type="checkbox" name="SelectedIngredients" value="@ingredient.Id">
                         <label>@ingredient.Name</label>
                     </div>
                 }
@@ -46,10 +46,10 @@
             <br />
             <input class="input-box" type="text" placeholder="Search..." id="categoriesSearch">
             <div class="scrollable-container">
-                @foreach (var category in ViewBag.allCategories)
+                @foreach (var category in Model.AllCategories)
                 {
                     <div>
-                        <input type="checkbox" name="selectedCategories" value="@category.Id">
+                        <input type="checkbox" name="SelectedCategories" value="@category.Id">
                         <label>@category.Name</label>
                     </div>
                 }
@@ -58,8 +58,8 @@
         <br />
 
         <div>
-            <label for="imageFile">Upload Image</label>
-            <input type="file" name="imageFile" accept="image/*" />
+            <label for="ImageFile">Upload Image</label>
+            <input type="file" name="ImageFile" accept="image/*" />
         </div>
 
         <div>
@@ -68,7 +68,6 @@
     </form>
 </div>
 
-
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
@@ -76,7 +75,7 @@
     <script>
         function filterCategoriesCheckboxes() {
             var searchCategoryValue = document.getElementById("categoriesSearch").value.toLowerCase();
-            var categoryCheckboxes = document.querySelectorAll('input[name="selectedCategories"]');
+            var categoryCheckboxes = document.querySelectorAll('input[name="SelectedCategories"]');
 
             categoryCheckboxes.forEach(function (checkbox) {
                 var label = checkbox.nextElementSibling;
@@ -92,7 +91,7 @@
 
         function filterIngredientsCheckboxes() {
             var searchIngredientValue = document.getElementById("ingredientsSearch").value.toLowerCase();
-            var ingredientCheckboxes = document.querySelectorAll('input[name="selectedIngredients"]');
+            var ingredientCheckboxes = document.querySelectorAll('input[name="SelectedIngredients"]');
 
             ingredientCheckboxes.forEach(function (checkbox) {
                 var label = checkbox.nextElementSibling;
@@ -111,4 +110,3 @@
         document.getElementById("ingredientsSearch").addEventListener("input", filterIngredientsCheckboxes);
     </script>
 }
-
