@@ -4,41 +4,19 @@ namespace CrockPot.Models
 {
     public class Rating
     {
-        private int _id;
-        private string _authorId;
-        private int _recipeId;
+        public int Id { get; private set; }
+
+        public string AuthorId { get; set; }
+
+        public int RecipeId { get; set; }
+
         [Range(1, 5, ErrorMessage = "Rating must be between 1 and 5.")]
-        private int _ratingValue;
+        public int RatingValue { get; set; }
 
         public Rating(int recipeId, int ratingValue)
         {
-            _recipeId = recipeId;
-            _ratingValue = ratingValue;
-        }
-       
-        public int Id
-        {
-            get { return _id; }
-            private set { _id = value; }
-        }
-
-        public string AuthorId
-        {
-            get { return _authorId; }
-            set { _authorId = value; }
-        }
-
-        public int RecipeId
-        {
-            get { return _recipeId; }
-            set { _recipeId = value; }
-        }
-
-        [Range(1, 5, ErrorMessage = "Rating must be between 1 and 5.")]
-        public int RatingValue
-        {
-            get { return _ratingValue; }
-            set { _ratingValue = value; }
+            RecipeId = recipeId;
+            RatingValue = ratingValue;
         }
     }
 }

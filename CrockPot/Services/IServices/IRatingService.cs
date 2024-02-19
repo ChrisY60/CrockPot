@@ -14,7 +14,6 @@ namespace CrockPot.Services.IServices
         Task<Rating> GetUserRatingOnRecipeAsync(string userId, int recipeId);
         Task<Rating> GetRatingByIdAsync(int id);
         Task<bool> CreateRatingAsync(Rating rating);
-        Task<bool> UpdateRatingAsync(Rating rating);
         Task<bool> DeleteRatingAsync(int id);
         bool RatingExists(int id);
     }

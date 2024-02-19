@@ -2,8 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using CrockPot.Models;
 using CrockPot.Services.IServices;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity;
 using System.Security.Claims;
 
 namespace CrockPot.Controllers
@@ -12,45 +10,41 @@ namespace CrockPot.Controllers
     public class RatingsController : Controller
     {
         private readonly IRatingService _ratingService;
-        private readonly UserManager<IdentityUser> _userManager;
 
-        public RatingsController(IRatingService ratingService, UserManager<IdentityUser> userManager)
+        public RatingsController(IRatingService ratingService)
         {
             _ratingService = ratingService;
-            _userManager = userManager;
         }
 
         public async Task<IActionResult> Index()
         {
-            return View(await _ratingService.GetRatingsAsync());
+            var ratings = await _ratingService.GetRatingsAsync();
+            return View(ratings);
         }
 
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _ratingService.GetRatingsAsync == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var ratings = await _ratingService.GetRatingsAsync();
-            var rating = ratings.FirstOrDefault(m => m.Id == id);
-
+            var rating = await _ratingService.GetRatingByIdAsync(id.Value);
             if (rating == null)
             {
                 return NotFound();
             }
 
-           
             return View(rating);
         }
 
-        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(int recipeId, int ratingValue)
         {
             Rating rating = new Rating(recipeId, ratingValue);
             rating.AuthorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             if (ModelState.IsValid)
             {
                 await _ratingService.CreateRatingAsync(rating);
@@ -60,65 +54,14 @@ namespace CrockPot.Controllers
             return View(rating);
         }
 
-        public async Task<IActionResult> Edit(int id)
-        {
-            if (_ratingService.GetRatingsAsync == null)
-            {
-                return NotFound();
-            }
-
-            var rating = await _ratingService.GetRatingByIdAsync(id);
-
-            if (rating == null)
-            {
-                return NotFound();
-            }
-
-            return View(rating);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,AuthorId,RecipeId,RatingValue")] Rating rating)
-        {
-            if (id != rating.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    await _ratingService.UpdateRatingAsync(rating);
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_ratingService.RatingExists(rating.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-
-            return View(rating);
-        }
-
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _ratingService.GetRatingsAsync == null)
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var ratings = await _ratingService.GetRatingsAsync();
-            var rating = ratings.FirstOrDefault(m => m.Id == id);
-
+            var rating = await _ratingService.GetRatingByIdAsync(id.Value);
             if (rating == null)
             {
                 return NotFound();
@@ -131,12 +74,12 @@ namespace CrockPot.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_ratingService.GetRatingsAsync == null)
+            var success = await _ratingService.DeleteRatingAsync(id);
+            if (!success)
             {
-                return Problem("Entity set 'ApplicationDbContext.Ratings' is null.");
+                return Problem("Failed to delete the rating.");
             }
 
-            await _ratingService.DeleteRatingAsync(id);
             return RedirectToAction(nameof(Index));
         }
 

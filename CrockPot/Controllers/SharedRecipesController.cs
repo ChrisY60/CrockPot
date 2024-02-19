@@ -18,8 +18,6 @@ namespace CrockPot.Controllers
             _userManager = userManager;
         }
 
-        
-
         public async Task<IActionResult> Index()
         {
             
@@ -53,14 +51,18 @@ namespace CrockPot.Controllers
                 RecipeId = RecipeId,
                 Timestamp = DateTime.Now
             };
-
-            var result = await _sharedRecipeService.CreateSharedRecipeAsync(newSharedRecipe);
-
-            if (result)
+            if(ModelState.IsValid)
             {
+                var result = await _sharedRecipeService.CreateSharedRecipeAsync(newSharedRecipe);
+
+                if (!result)
+                {
+                    ModelState.AddModelError(string.Empty, "Failed to share the recipe, please try again");
+                    return View(newSharedRecipe);
+                }
                 return RedirectToAction("Details", "Recipes", new { id = RecipeId });
             }
-            return NotFound();
+            return View(newSharedRecipe);
         }
 
         private async Task<Dictionary<string, string>> GetSenderNames(List<SharedRecipe> sharedRecipes)

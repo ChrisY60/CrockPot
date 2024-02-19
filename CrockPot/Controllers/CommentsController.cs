@@ -17,7 +17,7 @@ namespace CrockPot.Controllers
             _commentService = commentService;
         }
 
-       public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index()
         {
             var comments = await _commentService.GetCommentsAsync();
             return View(comments);
@@ -42,14 +42,14 @@ namespace CrockPot.Controllers
         public async Task<IActionResult> GetCommentsByRecipeId(int recipeId)
         {
             var comments = await _commentService.GetCommentsByRecipeIdAsync(recipeId);
-            return View("Index", comments); 
+            return View("Index", comments);
         }
 
         public async Task<IActionResult> GetCommentsByAuthorId()
         {
             var authorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var comments = await _commentService.GetCommentsByAuthorIdAsync(authorId);
-            return View("Index", comments); 
+            return View("Index", comments);
         }
 
 
@@ -62,7 +62,12 @@ namespace CrockPot.Controllers
 
             if (ModelState.IsValid)
             {
-                await _commentService.CreateCommentAsync(comment);
+                var result = await _commentService.CreateCommentAsync(comment);
+                if (!result)
+                {
+                    ModelState.AddModelError(string.Empty, "Failed to create the comment. Please try again.");
+                    return View(comment);
+                }
                 return RedirectToAction("Details", "Recipes", new { id = comment.RecipeId });
             }
 
@@ -85,23 +90,29 @@ namespace CrockPot.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, string content)
         {
-            Debug.Write("Content : ");
-            Debug.WriteLine(content);
             Comment comment = await _commentService.GetCommentByIdAsync(id);
-            if(comment == null)
+            if (comment == null)
             {
                 return NotFound();
             }
+
             comment.Content = content;
-            
+
             if (ModelState.IsValid)
             {
-                await _commentService.UpdateCommentAsync(comment);
+                var result = await _commentService.UpdateCommentAsync(comment);
+                if (!result)
+                {
+                    ModelState.AddModelError(string.Empty, "Failed to update the comment. Please try again.");
+                    return View(comment);
+                }
+
                 return RedirectToAction("Details", "Recipes", new { id = comment.RecipeId });
             }
 
             return View(comment);
         }
+
 
         public async Task<IActionResult> Delete(int? id)
         {
@@ -121,11 +132,26 @@ namespace CrockPot.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id, int recipeId)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_commentService.CommentExists(id))
+            var comment = await _commentService.GetCommentByIdAsync(id);
+            if (comment == null)
             {
-                await _commentService.DeleteCommentAsync(id);
+                return NotFound();
+            }
+
+            var recipeId = comment.RecipeId;
+
+            if (!_commentService.CommentExists(id))
+            {
+                return NotFound();
+            }
+
+            var result = await _commentService.DeleteCommentAsync(id);
+            if (!result)
+            {
+                ModelState.AddModelError(string.Empty, "Failed to delete the comment. Please try again.");
+                return View(await _commentService.GetCommentByIdAsync(id)); 
             }
 
             return RedirectToAction("Details", "Recipes", new { id = recipeId });

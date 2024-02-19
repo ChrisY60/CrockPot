@@ -55,41 +55,48 @@ namespace CrockPot.Services
 
             return 0;
         }
-
         public async Task<bool> CreateRatingAsync(Rating rating)
         {
-            var existingRating = await _context.Ratings
-                .FirstOrDefaultAsync(r => r.AuthorId == rating.AuthorId && r.RecipeId == rating.RecipeId);
+            try
+            {
+                var existingRating = await _context.Ratings
+                    .FirstOrDefaultAsync(r => r.AuthorId == rating.AuthorId && r.RecipeId == rating.RecipeId);
 
-            if (existingRating != null){
-                _context.Ratings.Remove(existingRating);
+                if (existingRating != null)
+                {
+                    existingRating.RatingValue = rating.RatingValue;
+                    _context.Ratings.Update(existingRating);
+                }else{
+                    _context.Ratings.Add(rating);
+                }
+                await _context.SaveChangesAsync();
+                return true;
             }
-
-            _context.Ratings.Add(rating);
-
-            await _context.SaveChangesAsync();
-
-            return true;
-        }
-
-        public async Task<bool> UpdateRatingAsync(Rating rating)
-        {
-            _context.Update(rating);
-            await _context.SaveChangesAsync();
-            return true;
+            catch (DbUpdateException)
+            {
+                return false;
+            }
         }
 
         public async Task<bool> DeleteRatingAsync(int id)
         {
-            var rating = await _context.Ratings.FindAsync(id);
-            if (rating != null)
+            try
             {
-                _context.Ratings.Remove(rating);
-                await _context.SaveChangesAsync();
-                return true;
+                var rating = await _context.Ratings.FindAsync(id);
+                if (rating != null)
+                {
+                    _context.Ratings.Remove(rating);
+                    await _context.SaveChangesAsync();
+                    return true;
+                }
+                return false;
             }
-            return false;
+            catch (DbUpdateException)
+            {
+                return false;
+            }
         }
+
 
         public bool RatingExists(int id)
         {

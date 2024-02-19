@@ -16,8 +16,15 @@ namespace CrockPot.Services
 
         public async Task<bool> CreateSharedRecipeAsync(SharedRecipe newRecipe)
         {
-            _context.SharedRecipes.Add(newRecipe);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.SharedRecipes.Add(newRecipe);
+                await _context.SaveChangesAsync();
+            }catch (DbUpdateException)
+            {
+                return false;
+            }
+            
             return true;
         }
 
