@@ -37,9 +37,16 @@ namespace CrockPot.Controllers
         {
             var recipes = await _recipeService.GetRecipesAsync();
             var authorsNames = await GetAuthorsNames(recipes);
-            ViewData["AuthorNames"] = authorsNames;
-            return View(recipes);
+
+            var viewModel = new IndexRecipeViewModel
+            {
+                Recipes = recipes,
+                AuthorNames = authorsNames
+            };
+
+            return View(viewModel);
         }
+
 
         public async Task<IActionResult> Details(int? id)
         {
@@ -66,22 +73,28 @@ namespace CrockPot.Controllers
 
             foreach (var comment in comments)
             {
-                var author = await _userManager.FindByIdAsync(comment.AuthorId);
-                string authorName = author != null ? author.UserName : "Unknown";
-                formattedComments.Add($"{authorName}: {comment.Content}");
+                var commentAuthor = await _userManager.FindByIdAsync(comment.AuthorId);
+                string commentAuthorName = commentAuthor != null ? commentAuthor.UserName : "Unknown";
+                formattedComments.Add($"{commentAuthorName}: {comment.Content}");
             }
 
-            ViewBag.Comments = formattedComments;
-
-            ViewBag.AverageRating = await _ratingService.GetAverageRatingByRecipeIdAsync(recipe.Id);
-
+            var author = await _userManager.FindByIdAsync(recipe.AuthorId);
+            var authorName = author != null ? author.UserName : "Unknown";
+            var averageRating = await _ratingService.GetAverageRatingByRecipeIdAsync(recipe.Id);
             var allUsers = await _userManager.Users.ToListAsync();
-            ViewBag.AllUsers = allUsers;
-
             var currentRating = await GetUserRatingOnRecipeAsync(recipe.Id);
-            ViewBag.CurrentRating = currentRating;
 
-            return View(recipe);
+            var viewModel = new DetailsRecipeViewModel
+            {
+                Recipe = recipe,
+                AuthorName = authorName,
+                FormattedComments = formattedComments,
+                AverageRating = averageRating,
+                AllUsers = allUsers,
+                CurrentRating = currentRating
+            };
+
+            return View(viewModel);
         }
 
 
@@ -227,6 +240,11 @@ namespace CrockPot.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             Recipe recipe = await _recipeService.GetRecipeByIdAsync(id);
+            if(recipe == null)
+            {
+                return NotFound();
+            }
+
             if (User.FindFirstValue(ClaimTypes.NameIdentifier) != recipe.AuthorId && !User.IsInRole("Admin"))
             {
                 return StatusCode(403);

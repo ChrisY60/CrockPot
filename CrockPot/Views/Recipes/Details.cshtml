@@ -1,35 +1,34 @@
-﻿@model CrockPot.Models.Recipe
+﻿@model CrockPot.ViewModels.DetailsRecipeViewModel
 @using CrockPot.Data
 @using Microsoft.AspNetCore.Identity
-
 
 @{
     ViewData["Title"] = "Details";
 }
 
-<h1>@Model.Name</h1>
+<h1>@Model.Recipe.Name</h1>
 <hr>
 
 <div style="display: flex">
     <dl>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Recipe.Name)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Recipe.Name)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Recipe.Description)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Recipe.Description)
         </dd>
         <dt class="col-sm-2">
             Ingredients
         </dt>
         <dd class="col-sm-10">
             <ul>
-                @foreach (var ingredient in Model.Ingredients)
+                @foreach (var ingredient in Model.Recipe.Ingredients)
                 {
                     <li>@ingredient.Name</li>
                 }
@@ -39,14 +38,14 @@
             <p>Author</p>
         </dt>
         <dd class="col-sm-10">
-            @Html.Raw(ViewBag.Author)
+            @Model.AuthorName
         </dd>
         <dt class="col-sm-2">
             Categories
         </dt>
         <dd class="col-sm-10">
             <ul>
-                @foreach (var category in Model.Categories)
+                @foreach (var category in Model.Recipe.Categories)
                 {
                     <li>@category.Name</li>
                 }
@@ -55,7 +54,7 @@
     </dl>
 
     <div>
-        <img src=@Model.ImageUrl alt="Image" style="width: 20vw; height: auto;" />
+        <img src="@Model.Recipe.ImageUrl" alt="Image" style="width: 20vw; height: auto;" />
     </div>
 
 </div>
@@ -64,31 +63,34 @@
 <hr />
 <h4>Rating</h4>
 <div>
-    <h6>Average Rating: @ViewBag.AverageRating</h6>
+    <h6>Average Rating: @Model.AverageRating</h6>
 </div>
 
 @for (int i = 1; i <= 5; i++)
 {
-    if (i <= ViewBag.AverageRating)
+    if (i <= Model.AverageRating)
     {
         <img src="https://crockpotblob2005.blob.core.windows.net/images/star_checked.png" alt="Star" style="width: 3vw; height: auto;" />
     }
-    else if (i - 0.5 <= ViewBag.AverageRating)
+    else if (i - 0.5 <= Model.AverageRating)
     {
         <img src="https://crockpotblob2005.blob.core.windows.net/images/star_semi_checked.png" alt="Star" style="width: 3vw; height: auto;" />
     }
-    else{
+    else
+    {
         <img src="https://crockpotblob2005.blob.core.windows.net/images/star.png" alt="Star" style="width: 3vw; height: auto;" />
     }
 }
-<br><br>
+<br>
+<br>
 <h4>Submit your rating</h4>
 <div style="display: flex;align-items: center;">
-    @if(@ViewBag.CurrentRating != null){
+    @if (Model.CurrentRating != null)
+    {
         @for (int i = 1; i <= 5; i++)
         {
             var buttonId = $"rating-{i}";
-            if (i <= ViewBag.CurrentRating.RatingValue)
+            if (i <= Model.CurrentRating.RatingValue)
             {
                 <button id="@buttonId" class="rating-button" style="border: none;background: none;"> <img src="https://crockpotblob2005.blob.core.windows.net/images/star_checked.png" alt="Star" style="width: 3vw; height: auto;" /></button>
             }
@@ -97,7 +99,6 @@
                 <button id="@buttonId" class="rating-button" style="border: none;background: none;"> <img src="https://crockpotblob2005.blob.core.windows.net/images/star.png" alt="Star" style="width: 3vw; height: auto;" /></button>
             }
         }
-
     }
     else
     {
@@ -109,7 +110,7 @@
     }
 
     <form id="ratingForm" asp-controller="Ratings" asp-action="Create" method="post">
-        <input type="hidden" name="RecipeId" value="@Model.Id" />
+        <input type="hidden" name="RecipeId" value="@Model.Recipe.Id" />
         <input type="hidden" id="ratingValue" name="ratingValue" value="0" />
 
         <button type="submit">Submit Rating</button>
@@ -122,7 +123,7 @@
 <div>
     <h4>Comments</h4>
     <ul>
-        @foreach (var comment in ViewBag.Comments)
+        @foreach (var comment in Model.FormattedComments)
         {
             <li>@comment</li>
         }
@@ -130,7 +131,7 @@
 </div>
 
 <form asp-controller="Comments" asp-action="Create" method="post">
-    <input type="hidden" name="RecipeId" value="@Model.Id" />
+    <input type="hidden" name="RecipeId" value="@Model.Recipe.Id" />
     <input name="Content" class="input-box" placeholder="Comment here">
 
     <button type="submit">Submit Comment</button>
@@ -141,27 +142,23 @@
 <div>
     <h4>Share Recipe</h4>
     <form asp-controller="SharedRecipes" asp-action="Create" method="post">
-        <input type="hidden" name="RecipeId" value="@Model.Id" />
+        <input type="hidden" name="RecipeId" value="@Model.Recipe.Id" />
 
         <label for="ReceiverId">Select Receiver:</label>
         <select name="ReceiverId" class="input-box" required>
             <option value="">Select a User</option>
-            @if (ViewBag.AllUsers != null)
+            @if (Model.AllUsers != null)
             {
-                foreach (var user in ViewBag.AllUsers)
+                foreach (var user in Model.AllUsers)
                 {
                     <option value="@user.Id">@user.UserName</option>
                 }
             }
-            
         </select>
 
         <button type="submit">Share Recipe</button>
     </form>
 </div>
-
-
-
 
 
 

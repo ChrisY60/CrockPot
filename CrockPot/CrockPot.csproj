@@ -28,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="ViewModels\Recipes\" />
     <Folder Include="Views\Home\NewFolder\" />
     <Folder Include="wwwroot\Images\" />
   </ItemGroup>

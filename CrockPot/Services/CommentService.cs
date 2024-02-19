@@ -61,7 +61,7 @@ namespace CrockPot.Services
                 await _context.SaveChangesAsync();
                 return true;
             }
-            catch (DbUpdateException ex)
+            catch (DbUpdateException)
             {
                 return false;
             }
