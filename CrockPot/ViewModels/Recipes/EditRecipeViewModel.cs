@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace CrockPot.ViewModels
+namespace CrockPot.ViewModels.Recipes
 {
     public class EditRecipeViewModel
     {

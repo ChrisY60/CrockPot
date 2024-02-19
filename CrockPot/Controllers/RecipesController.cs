@@ -7,6 +7,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using CrockPot.ViewModels;
 using System.Diagnostics;
+using CrockPot.ViewModels.Recipes;
 
 namespace CrockPot.Controllers
 {

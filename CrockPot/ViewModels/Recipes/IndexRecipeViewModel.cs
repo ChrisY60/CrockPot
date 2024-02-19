@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using CrockPot.Models;
 
-namespace CrockPot.ViewModels
+namespace CrockPot.ViewModels.Recipes
 {
     public class IndexRecipeViewModel
     {

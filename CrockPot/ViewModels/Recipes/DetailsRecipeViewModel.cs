@@ -1,7 +1,7 @@
 ﻿using CrockPot.Models;
 using Microsoft.AspNetCore.Identity;
 
-namespace CrockPot.ViewModels
+namespace CrockPot.ViewModels.Recipes
 {
     public class DetailsRecipeViewModel
     {
