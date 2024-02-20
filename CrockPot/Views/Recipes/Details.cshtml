@@ -2,6 +2,7 @@
 @using CrockPot.Data
 @using CrockPot.ViewModels.Recipes;
 @using Microsoft.AspNetCore.Identity
+@using System.Security.Claims;
 
 @{
     ViewData["Title"] = "Details";
@@ -124,9 +125,20 @@
 <div>
     <h4>Comments</h4>
     <ul>
-        @foreach (var comment in Model.FormattedComments)
+        @foreach (var comment in Model.Comments)
         {
-            <li>@comment</li>
+            var author = Model.AllUsers.FirstOrDefault(u => u.Id == comment.AuthorId);
+            var authorName = author != null ? author.UserName : "Unknown";
+            <li>
+                @authorName : @comment.Content
+                @if (User.Identity.IsAuthenticated && comment.AuthorId == User.FindFirst(ClaimTypes.NameIdentifier)?.Value)
+                {
+                    <a asp-controller="Comments" asp-action="Edit" asp-route-id="@comment.Id">Edit</a>
+                    <a asp-controller="Comments" asp-action="Delete" asp-route-id="@comment.Id">Delete</a>
+                }else if (User.IsInRole("Admin")){
+                    <a asp-controller="Comments" asp-action="Delete" asp-route-id="@comment.Id">Delete</a>
+                }
+            </li>
         }
     </ul>
 </div>

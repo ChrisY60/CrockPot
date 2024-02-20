@@ -1,4 +1,5 @@
 ﻿using CrockPot.Models;
+using CrockPot.Services;
 using CrockPot.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -39,19 +40,6 @@ namespace CrockPot.Controllers
             return View(comment);
         }
 
-        public async Task<IActionResult> GetCommentsByRecipeId(int recipeId)
-        {
-            var comments = await _commentService.GetCommentsByRecipeIdAsync(recipeId);
-            return View("Index", comments);
-        }
-
-        public async Task<IActionResult> GetCommentsByAuthorId()
-        {
-            var authorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var comments = await _commentService.GetCommentsByAuthorIdAsync(authorId);
-            return View("Index", comments);
-        }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -81,6 +69,11 @@ namespace CrockPot.Controllers
             if (comment == null)
             {
                 return NotFound();
+            }
+
+            if (User.FindFirstValue(ClaimTypes.NameIdentifier) != comment.AuthorId)
+            {
+                return StatusCode(403);
             }
 
             return View(comment);
@@ -125,6 +118,10 @@ namespace CrockPot.Controllers
             if (comment == null)
             {
                 return NotFound();
+            }
+            if (User.FindFirstValue(ClaimTypes.NameIdentifier) != comment.AuthorId && !User.IsInRole("Admin"))
+            {
+                return StatusCode(403);
             }
 
             return View(comment);

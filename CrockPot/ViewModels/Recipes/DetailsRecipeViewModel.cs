@@ -7,7 +7,7 @@ namespace CrockPot.ViewModels.Recipes
     {
         public Recipe Recipe { get; set; }
         public string AuthorName { get; set; }
-        public List<string> FormattedComments { get; set; }
+        public List<Comment> Comments { get; set; }
         public double AverageRating { get; set; }
         public Rating CurrentRating { get; set; }
         public List<IdentityUser> AllUsers { get; set; }

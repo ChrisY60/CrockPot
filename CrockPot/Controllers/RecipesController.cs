@@ -70,15 +70,6 @@ namespace CrockPot.Controllers
 
             var comments = await _commentService.GetCommentsByRecipeIdAsync(recipe.Id);
 
-            var formattedComments = new List<string>();
-
-            foreach (var comment in comments)
-            {
-                var commentAuthor = await _userManager.FindByIdAsync(comment.AuthorId);
-                string commentAuthorName = commentAuthor != null ? commentAuthor.UserName : "Unknown";
-                formattedComments.Add($"{commentAuthorName}: {comment.Content}");
-            }
-
             var author = await _userManager.FindByIdAsync(recipe.AuthorId);
             var authorName = author != null ? author.UserName : "Unknown";
             var averageRating = await _ratingService.GetAverageRatingByRecipeIdAsync(recipe.Id);
@@ -89,7 +80,7 @@ namespace CrockPot.Controllers
             {
                 Recipe = recipe,
                 AuthorName = authorName,
-                FormattedComments = formattedComments,
+                Comments = comments,
                 AverageRating = averageRating,
                 AllUsers = allUsers,
                 CurrentRating = currentRating
@@ -218,7 +209,7 @@ namespace CrockPot.Controllers
         public async Task<IActionResult> Delete(int? id)
         {
 
-            if (id == null || !_recipeService.RecipeExists(id.Value) && !User.IsInRole("Admin"))
+            if (id == null || !_recipeService.RecipeExists(id.Value))
             {
                 return NotFound();
             }
