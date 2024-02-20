@@ -18,28 +18,6 @@ namespace CrockPot.Controllers
             _commentService = commentService;
         }
 
-        public async Task<IActionResult> Index()
-        {
-            var comments = await _commentService.GetCommentsAsync();
-            return View(comments);
-        }
-
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null || !_commentService.CommentExists(id.Value))
-            {
-                return NotFound();
-            }
-
-            var comment = await _commentService.GetCommentByIdAsync(id.Value);
-            if (comment == null)
-            {
-                return NotFound();
-            }
-
-            return View(comment);
-        }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
