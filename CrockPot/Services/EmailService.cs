@@ -34,6 +34,10 @@ namespace CrockPot.Services
             var htmlContent = HtmlContent;
             var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
             var response = await client.SendEmailAsync(msg);
+            if (!response.IsSuccessStatusCode)
+            {
+                return false;
+            }
             return true;
         }
     }

@@ -109,9 +109,11 @@ namespace CrockPot.Areas.Identity.Pages.Account
                         values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
-                    await _emailService.SendEmailAsync(Input.Email, "Confirm your email",
+                    var emailResult = await _emailService.SendEmailAsync(Input.Email, "Confirm your email",
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
+                    if (!emailResult){
+                        ModelState.AddModelError(string.Empty, "There was a problem sending the confirmation email. Please try again later.");
+                    }
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
                         return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });

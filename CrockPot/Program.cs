@@ -27,7 +27,15 @@ if (!await containerClient.ExistsAsync())
 var builder = WebApplication.CreateBuilder(args);
 
 
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var keyVaultUrl = builder.Configuration["KeyVault:KeyVaultUrl"];
+var keyVaultClientId = builder.Configuration["KeyVault:ClientId"];
+var keyVaultClientSecret = builder.Configuration["KeyVault:ClientSecret"];
+var keyVaultDirectoryId = builder.Configuration["KeyVault:DirectoryId"];
+
+var credential = new ClientSecretCredential(keyVaultDirectoryId, keyVaultClientId, keyVaultClientSecret);
+var secretClient = new SecretClient(new Uri(keyVaultUrl), credential);
+
+var connectionString = (await secretClient.GetSecretAsync("ConnectionString")).Value.Value;
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -89,9 +97,10 @@ using (var scope = app.Services.CreateScope()){
 
 using (var scope = app.Services.CreateScope())
 {
-    var email = "admin@crockpot.com";
-    var password = "AdminPassword1!";
-    
+
+    string email = (await secretClient.GetSecretAsync("AdminEmail")).Value.Value;
+    var password = (await secretClient.GetSecretAsync("AdminPassword")).Value.Value;
+
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
     if(await userManager.FindByEmailAsync(email) == null)
     {
