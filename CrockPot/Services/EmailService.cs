@@ -25,7 +25,7 @@ namespace CrockPot.Services
             var credential = new ClientSecretCredential(keyVaultDirectoryId, keyVaultClientId, keyVaultClientSecret);
             var secretClient = new SecretClient(new Uri(keyVaultUrl), credential);
 
-            var apiKey = (await secretClient.GetSecretAsync("SendGridAPIKey")).Value.Value;
+            var apiKey = (await secretClient.GetSecretAsync("APIKeySendGrid")).Value.Value;
             var client = new SendGridClient(apiKey);
             var from = new EmailAddress("crockpot0206@gmail.com", "CrockPot");
             var subject = Subject;
