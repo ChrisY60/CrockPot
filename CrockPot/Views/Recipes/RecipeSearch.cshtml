@@ -1,4 +1,6 @@
-﻿@{
+﻿@model CrockPot.ViewModels.Recipes.SearchRecipeViewModel
+
+@{
     ViewData["Title"] = "Recipe Search";
 }
 
@@ -8,17 +10,17 @@
         <h2>Find your perfect recipe</h2>
 
         <form asp-controller="Recipes" asp-action="SearchByFilter" method="get">
-            <input type="text" name="name" placeholder="Enter recipe name" />
+            <input type="text" name="Name" placeholder="Enter recipe name" />
 
             <div>
                 <label>Select Ingredients</label>
                 <br>
                 <input class="input-box" type="text" placeholder="Search..." id="ingredientsSearch">
                 <div class="scrollable-container">
-                    @foreach (var ingredient in ViewBag.allIngredients)
+                    @foreach (var ingredient in Model.AllIngredients)
                     {
                         <div>
-                            <input type="checkbox" name="selectedIngredients" value="@ingredient.Id">
+                            <input type="checkbox" name="SelectedIngredients" value="@ingredient.Id">
                             <label>@ingredient.Name</label>
                         </div>
                     }
@@ -30,10 +32,10 @@
                 <br />
                 <input class="input-box" type="text" placeholder="Search..." id="categoriesSearch">
                 <div class="scrollable-container">
-                    @foreach (var category in ViewBag.allCategories)
+                    @foreach (var category in Model.AllCategories)
                     {
                         <div>
-                            <input type="checkbox" name="selectedCategories" value="@category.Id">
+                            <input type="checkbox" name="SelectedCategories" value="@category.Id">
                             <label>@category.Name</label>
                         </div>
                     }
@@ -44,43 +46,43 @@
             <button type="submit">Search</button>
         </form>
 
-    @section Scripts {
-        <script>
-            function filterCategoriesCheckboxes() {
-                var searchCategoryValue = document.getElementById("categoriesSearch").value.toLowerCase();
-                var categoryCheckboxes = document.querySelectorAll('input[name="selectedCategories"]');
+        @section Scripts {
+            <script>
+                function filterCategoriesCheckboxes() {
+                    var searchCategoryValue = document.getElementById("categoriesSearch").value.toLowerCase();
+                    var categoryCheckboxes = document.querySelectorAll('input[name="SelectedCategories"]');
 
-                categoryCheckboxes.forEach(function (checkbox) {
-                    var label = checkbox.nextElementSibling;
-                    var categoryName = label.textContent.toLowerCase();
+                    categoryCheckboxes.forEach(function (checkbox) {
+                        var label = checkbox.nextElementSibling;
+                        var categoryName = label.textContent.toLowerCase();
 
-                    if (categoryName.includes(searchCategoryValue)) {
-                        checkbox.parentNode.style.display = 'block';
-                    } else {
-                        checkbox.parentNode.style.display = 'none';
-                    }
-                });
-            }
+                        if (categoryName.includes(searchCategoryValue)) {
+                            checkbox.parentNode.style.display = 'block';
+                        } else {
+                            checkbox.parentNode.style.display = 'none';
+                        }
+                    });
+                }
 
-            function filterIngredientsCheckboxes() {
-                var searchIngredientValue = document.getElementById("ingredientsSearch").value.toLowerCase();
-                var ingredientCheckboxes = document.querySelectorAll('input[name="selectedIngredients"]');
+                function filterIngredientsCheckboxes() {
+                    var searchIngredientValue = document.getElementById("ingredientsSearch").value.toLowerCase();
+                    var ingredientCheckboxes = document.querySelectorAll('input[name="SelectedIngredients"]');
 
-                ingredientCheckboxes.forEach(function (checkbox) {
-                    var label = checkbox.nextElementSibling;
-                    var ingredientName = label.textContent.toLowerCase();
+                    ingredientCheckboxes.forEach(function (checkbox) {
+                        var label = checkbox.nextElementSibling;
+                        var ingredientName = label.textContent.toLowerCase();
 
-                    if (ingredientName.includes(searchIngredientValue)) {
-                        checkbox.parentNode.style.display = 'block';
-                    } else {
-                        checkbox.parentNode.style.display = 'none';
-                    }
-                });
-            }
+                        if (ingredientName.includes(searchIngredientValue)) {
+                            checkbox.parentNode.style.display = 'block';
+                        } else {
+                            checkbox.parentNode.style.display = 'none';
+                        }
+                    });
+                }
 
-            document.getElementById("categoriesSearch").addEventListener("input", filterCategoriesCheckboxes);
+                document.getElementById("categoriesSearch").addEventListener("input", filterCategoriesCheckboxes);
 
-            document.getElementById("ingredientsSearch").addEventListener("input", filterIngredientsCheckboxes);
-        </script>
-    }
+                document.getElementById("ingredientsSearch").addEventListener("input", filterIngredientsCheckboxes);
+            </script>
+        }
 </body>

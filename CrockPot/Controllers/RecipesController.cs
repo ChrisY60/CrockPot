@@ -62,12 +62,6 @@ namespace CrockPot.Controllers
                 return NotFound();
             }
 
-            ViewBag.Author = await _userManager.FindByIdAsync(recipe.AuthorId);
-            if (ViewBag.Author == null)
-            {
-                ViewBag.Author = "Unknown";
-            } 
-
             var comments = await _commentService.GetCommentsByRecipeIdAsync(recipe.Id);
 
             var author = await _userManager.FindByIdAsync(recipe.AuthorId);
@@ -256,17 +250,28 @@ namespace CrockPot.Controllers
 
         public async Task<IActionResult> RecipeSearch()
         {
-            ViewBag.allCategories = await _categoryService.GetCategoriesAsync();
-            ViewBag.allIngredients = await _ingredientService.GetIngredientsAsync();
-            return View("RecipeSearch");
+            var viewModel = new SearchRecipeViewModel
+            {
+                AllCategories = await _categoryService.GetCategoriesAsync(),
+                AllIngredients = await _ingredientService.GetIngredientsAsync()
+            };
+            return View("RecipeSearch", viewModel);
         }
+
         public async Task<IActionResult> SearchByFilter(string name, int[] selectedCategories, int[] selectedIngredients)
         {
             var recipes = await _recipeService.GetAllRecipesByFilterAsync(name, selectedCategories, selectedIngredients);
             var authorsNames = await GetAuthorsNames(recipes);
-            ViewData["AuthorNames"] = authorsNames;
-            return View("Index", recipes);
+
+            var viewModel = new IndexRecipeViewModel
+            {
+                Recipes = recipes,
+                AuthorNames = authorsNames
+            };
+
+            return View("Index", viewModel);
         }
+
 
         public async Task<IActionResult> HighestRatedRecipes()
         {
