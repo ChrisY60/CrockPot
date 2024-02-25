@@ -83,8 +83,7 @@
         <img src="https://crockpotblob2005.blob.core.windows.net/images/star.png" alt="Star" style="width: 3vw; height: auto;" />
     }
 }
-<br>
-<br>
+<br><br>
 <h4>Submit your rating</h4>
 <div style="display: flex;align-items: center;">
     @if (Model.CurrentRating != null)
@@ -125,7 +124,7 @@
 <div>
     <h4>Comments</h4>
     <ul>
-        @foreach (var comment in Model.Comments)
+        @foreach (var comment in Model.Recipe.Comments)
         {
             var author = Model.AllUsers.FirstOrDefault(u => u.Id == comment.AuthorId);
             var authorName = author != null ? author.UserName : "Unknown";

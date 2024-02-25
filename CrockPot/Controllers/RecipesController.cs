@@ -74,7 +74,6 @@ namespace CrockPot.Controllers
             {
                 Recipe = recipe,
                 AuthorName = authorName,
-                Comments = comments,
                 AverageRating = averageRating,
                 AllUsers = allUsers,
                 CurrentRating = currentRating
