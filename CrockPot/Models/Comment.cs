@@ -11,6 +11,7 @@ namespace CrockPot.Models
         [Required]
         [MaxLength(500)]
         public string Content { get; set; }
+        public Recipe Recipe { get; set; }
 
         public Comment(int recipeId, string content)
         {

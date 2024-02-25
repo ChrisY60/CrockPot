@@ -32,13 +32,26 @@ namespace CrockPot.Data
                 .WithMany(i => i.Recipes)
                 .UsingEntity(j => j.ToTable("RecipeIngredient"));
 
+            modelBuilder.Entity<Comment>()
+                .HasOne(c => c.Recipe)
+                .WithMany(r => r.Comments)
+                .HasForeignKey(c => c.RecipeId);
 
+            modelBuilder.Entity<Rating>()
+                .HasOne(r => r.Recipe)
+                .WithMany(recipe => recipe.Ratings)
+                .HasForeignKey(r => r.RecipeId);
+
+            modelBuilder.Entity<SharedRecipe>()
+                .HasOne(sr => sr.RecipeObject)
+                .WithMany()
+                .HasForeignKey(sr => sr.RecipeId);
 
         }
 
 
-        
 
-        
+
+
     }
 }

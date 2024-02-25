@@ -13,6 +13,8 @@ namespace CrockPot.Models
         [Range(1, 5, ErrorMessage = "Rating must be between 1 and 5.")]
         public int RatingValue { get; set; }
 
+        public Recipe Recipe { get; set; }
+
         public Rating(int recipeId, int ratingValue)
         {
             RecipeId = recipeId;
