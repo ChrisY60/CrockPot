@@ -62,7 +62,6 @@ namespace CrockPot.Controllers
                 return NotFound();
             }
 
-            var comments = await _commentService.GetCommentsByRecipeIdAsync(recipe.Id);
 
             var author = await _userManager.FindByIdAsync(recipe.AuthorId);
             var authorName = author != null ? author.UserName : "Unknown";

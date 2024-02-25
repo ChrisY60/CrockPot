@@ -14,15 +14,15 @@
     
     <button class="display_box" onclick="window.location.href = 'Recipes/Details/' + @item.RecipeId;">
         <div class="display_box_image">
-            @if (item.RecipeObject != null)
+            @if (item.Recipe != null)
             {
-                <img src="@item.RecipeObject.ImageUrl" alt="Recipe Image" />
+                <img src="@item.Recipe.ImageUrl" alt="Recipe Image" />
             }
         </div>
 
         <div class="display_box_content">
             <p>Shared by: @senderNames[item.SenderId]</p>
-            <p>Recipe Name: @item.RecipeObject.Name</p>
+            <p>Recipe Name: @item.Recipe.Name</p>
         </div>
 
     </button>

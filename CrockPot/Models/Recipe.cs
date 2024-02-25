@@ -13,16 +13,7 @@
 
         public ICollection<Rating> Ratings { get; set; }
 
-
         public string ImageUrl { get; set; }
-
-        public Recipe(int id, string name, string description, string authorId)
-        {
-            Id = id;
-            Name = name;
-            Description = description;
-            AuthorId = authorId;
-        }
 
         public Recipe() { }
     }

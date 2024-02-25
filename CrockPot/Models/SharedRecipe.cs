@@ -7,6 +7,6 @@
         public string ReceiverId { get; set; }
         public int RecipeId { get; set; }
         public DateTime Timestamp { get; set; }
-        public Recipe RecipeObject { get; set; }
+        public Recipe Recipe { get; set; }
     }
 }

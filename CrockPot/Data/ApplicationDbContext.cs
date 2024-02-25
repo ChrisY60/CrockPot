@@ -43,7 +43,7 @@ namespace CrockPot.Data
                 .HasForeignKey(r => r.RecipeId);
 
             modelBuilder.Entity<SharedRecipe>()
-                .HasOne(sr => sr.RecipeObject)
+                .HasOne(sr => sr.Recipe)
                 .WithMany()
                 .HasForeignKey(sr => sr.RecipeId);
 

@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace CrockPot.Models
+﻿namespace CrockPot.Models
 {
     public class Category
     {

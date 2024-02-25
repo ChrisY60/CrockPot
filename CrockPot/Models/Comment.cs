@@ -8,7 +8,6 @@ namespace CrockPot.Models
         public int RecipeId { get; set; }
         public string AuthorId { get; set; }
 
-        [Required]
         [MaxLength(500)]
         public string Content { get; set; }
         public Recipe Recipe { get; set; }
@@ -18,8 +17,6 @@ namespace CrockPot.Models
             RecipeId = recipeId;
             Content = content;
         }
-
-        public Comment(){}
 
     }
 }
