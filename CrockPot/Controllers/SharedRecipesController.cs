@@ -49,7 +49,7 @@ namespace CrockPot.Controllers
                 SenderId = currentUser.Id,
                 ReceiverId = ReceiverId,
                 RecipeId = RecipeId,
-                Timestamp = DateTime.Now
+                TimeOfSending = DateTime.Now
             };
             if(ModelState.IsValid)
             {

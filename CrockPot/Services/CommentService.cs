@@ -14,7 +14,6 @@ namespace CrockPot.Services
             _context = context;
         }
 
-
         public async Task<List<Comment>> GetCommentsAsync()
         {
             return await _context.Comments.ToListAsync();
@@ -23,20 +22,6 @@ namespace CrockPot.Services
         public async Task<Comment> GetCommentByIdAsync(int id)
         {
             return await _context.Comments.FindAsync(id);
-        }
-
-        public async Task<List<Comment>> GetCommentsByRecipeIdAsync(int recipeId)
-        {
-            return await _context.Comments
-                .Where(comment => comment.RecipeId == recipeId)
-                .ToListAsync();
-        }
-
-        public async Task<List<Comment>> GetCommentsByAuthorIdAsync(string authorId)
-        {
-            return await _context.Comments
-                .Where(comment => comment.AuthorId == authorId)
-                .ToListAsync();
         }
 
         public async Task<bool> CreateCommentAsync(Comment comment)
