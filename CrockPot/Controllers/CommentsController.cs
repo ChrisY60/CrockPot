@@ -21,9 +21,8 @@ namespace CrockPot.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(int recipeId, string content)
+        public async Task<IActionResult> Create(Comment comment)
         {
-            Comment comment = new Comment(recipeId, content);
             comment.AuthorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (ModelState.IsValid)
@@ -34,10 +33,22 @@ namespace CrockPot.Controllers
                     ModelState.AddModelError(string.Empty, "Failed to create the comment. Please try again.");
                     return View(comment);
                 }
-                return RedirectToAction("Details", "Recipes", new { id = comment.RecipeId });
+            }
+            else
+            {
+                Debug.WriteLine("Errors are tuk :) : ");
+                foreach (var modelStateEntry in ModelState.Values)
+                {
+                    foreach (var error in modelStateEntry.Errors)
+                    {
+
+                        Debug.WriteLine(error.ErrorMessage);
+                    }
+                }
+
             }
 
-            return View(comment);
+            return RedirectToAction("Details", "Recipes", new { id = comment.RecipeId });
         }
 
 
@@ -59,30 +70,47 @@ namespace CrockPot.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, string content)
+        public async Task<IActionResult> Edit(Comment comment)
         {
-            Comment comment = await _commentService.GetCommentByIdAsync(id);
-            if (comment == null)
-            {
-                return NotFound();
-            }
-
-            comment.Content = content;
-
             if (ModelState.IsValid)
             {
-                var result = await _commentService.UpdateCommentAsync(comment);
+                var existingComment = await _commentService.GetCommentByIdAsync(comment.Id);
+                if (existingComment == null)
+                {
+                    return NotFound();
+                }
+
+                if (User.FindFirstValue(ClaimTypes.NameIdentifier) != existingComment.AuthorId)
+                {
+                    return StatusCode(403);
+                }
+
+                existingComment.Content = comment.Content;
+
+                var result = await _commentService.UpdateCommentAsync(existingComment);
                 if (!result)
                 {
                     ModelState.AddModelError(string.Empty, "Failed to update the comment. Please try again.");
-                    return View(comment);
+                    return View(existingComment);
                 }
 
-                return RedirectToAction("Details", "Recipes", new { id = comment.RecipeId });
+                return RedirectToAction("Details", "Recipes", new { id = existingComment.RecipeId });
+            }
+            else
+            {
+                Debug.WriteLine("Errors are tuk :) : ");
+                foreach (var modelStateEntry in ModelState.Values)
+                {
+                    foreach (var error in modelStateEntry.Errors)
+                    {
+                        Debug.WriteLine(error.ErrorMessage);
+                    }
+                }
             }
 
             return View(comment);
         }
+
 
 
         public async Task<IActionResult> Delete(int? id)

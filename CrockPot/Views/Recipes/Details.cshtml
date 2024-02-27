@@ -146,7 +146,7 @@
 <form asp-controller="Comments" asp-action="Create" method="post">
     <input type="hidden" name="RecipeId" value="@Model.Recipe.Id" />
     <input name="Content" class="input-box" placeholder="Comment here">
-
+    <input type="hidden" name="AuthorId" value="@User.FindFirstValue(ClaimTypes.NameIdentifier)" />
     <button type="submit">Submit Comment</button>
 </form>
 

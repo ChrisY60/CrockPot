@@ -8,15 +8,10 @@ namespace CrockPot.Models
         public int RecipeId { get; set; }
         public string AuthorId { get; set; }
 
+        [MinLength(1)]
         [MaxLength(500)]
         public string Content { get; set; }
-        public Recipe Recipe { get; set; }
-
-        public Comment(int recipeId, string content)
-        {
-            RecipeId = recipeId;
-            Content = content;
-        }
+        public Recipe? Recipe { get; set; }
 
     }
 }
