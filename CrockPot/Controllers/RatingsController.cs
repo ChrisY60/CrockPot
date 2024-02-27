@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using CrockPot.Models;
 using CrockPot.Services.IServices;
 using System.Security.Claims;
+using System.Diagnostics;
 
 namespace CrockPot.Controllers
 {
@@ -40,18 +41,16 @@ namespace CrockPot.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(int recipeId, int ratingValue)
+        public async Task<IActionResult> Create(Rating rating)
         {
-            Rating rating = new Rating(recipeId, ratingValue);
             rating.AuthorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (ModelState.IsValid)
             {
                 await _ratingService.CreateRatingAsync(rating);
-                return RedirectToAction("Details", "Recipes", new { id = rating.RecipeId });
             }
 
-            return View(rating);
+            return RedirectToAction("Details", "Recipes", new { id = rating.RecipeId });
         }
 
         public async Task<IActionResult> Delete(int? id)
