@@ -26,13 +26,6 @@ namespace CrockPot.Services
                 .ToListAsync();
         }
 
-        public async Task<List<Rating>> GetRatingsByAuthorIdAsync(string authorId)
-        {
-            return await _context.Ratings
-                .Where(rating => rating.AuthorId == authorId)
-                .ToListAsync();
-        }
-
         public async Task<Rating> GetRatingByIdAsync(int id)
         {
             return await _context.Ratings.FindAsync(id);
