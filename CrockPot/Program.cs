@@ -6,8 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Azure.Storage.Blobs;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
-using Microsoft.Extensions.Configuration.AzureKeyVault;
-using System.Diagnostics;
 
 var blobServiceClient = new BlobServiceClient(
         new Uri("https://crockpotblob2005.blob.core.windows.net"),

@@ -21,9 +21,7 @@ namespace CrockPot.Services
 
         public async Task<List<Rating>> GetRatingsByRecipeIdAsync(int recipeId)
         {
-            return await _context.Ratings
-                .Where(rating => rating.RecipeId == recipeId)
-                .ToListAsync();
+            return await _context.Ratings.Where(rating => rating.RecipeId == recipeId).ToListAsync();
         }
 
         public async Task<Rating> GetRatingByIdAsync(int id)
@@ -33,8 +31,7 @@ namespace CrockPot.Services
 
         public async Task<Rating> GetUserRatingOnRecipeAsync(string userId, int recipeId)
         {
-            return await _context.Ratings
-                .FirstOrDefaultAsync(r => r.AuthorId == userId && r.RecipeId == recipeId);
+            return await _context.Ratings.FirstOrDefaultAsync(r => r.AuthorId == userId && r.RecipeId == recipeId);
         }
         public async Task<float> GetAverageRatingByRecipeIdAsync(int recipeId)
         {
@@ -52,8 +49,7 @@ namespace CrockPot.Services
         {
             try
             {
-                var existingRating = await _context.Ratings
-                    .FirstOrDefaultAsync(r => r.AuthorId == rating.AuthorId && r.RecipeId == rating.RecipeId);
+                var existingRating = await GetUserRatingOnRecipeAsync(rating.AuthorId, rating.RecipeId);
 
                 if (existingRating != null)
                 {

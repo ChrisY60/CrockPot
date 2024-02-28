@@ -14,11 +14,11 @@ namespace CrockPot.Services
             _context = context;
         }
 
-        public async Task<bool> CreateSharedRecipeAsync(SharedRecipe newRecipe)
+        public async Task<bool> CreateSharedRecipeAsync(SharedRecipe sharedRecipe)
         {
             try
             {
-                _context.SharedRecipes.Add(newRecipe);
+                _context.SharedRecipes.Add(sharedRecipe);
                 await _context.SaveChangesAsync();
             }catch (DbUpdateException)
             {

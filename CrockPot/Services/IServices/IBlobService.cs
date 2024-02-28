@@ -3,6 +3,5 @@
     public interface IBlobService
     {
         Task<string> UploadImageAsync(IFormFile file);
-        Task<string> GetImageUrlAsync(string blobName);
     }
 }

@@ -30,39 +30,13 @@ namespace CrockPot.Services
                 }
                 else
                 {
-                    throw new InvalidOperationException($"Container not found.");
+                    throw new InvalidOperationException("Container not found.");
                 }
             }
             catch (RequestFailedException ex)
             {
-                throw new ApplicationException($"Blob storage request failed: {ex.Message}", ex);
+                throw new ApplicationException("Blob storage request failed" + ex.Message);
             }
         }
-
-        public async Task<string> GetImageUrlAsync(string blobName)
-        {
-            try
-            {
-                var blobServiceClient = new BlobServiceClient(
-                    new Uri("https://crockpotblob2005.blob.core.windows.net"),
-                    new DefaultAzureCredential());
-
-                BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
-
-                var blockBlob = containerClient.GetBlobClient(blobName);
-
-                if (await blockBlob.ExistsAsync())
-                {
-                    return blockBlob.Uri.ToString();
-                }
-
-                return null;
-            }
-            catch (RequestFailedException ex)
-            {
-                throw new ApplicationException($"Blob storage request failed: {ex.Message}", ex);
-            }
-        }
-
     }
 }

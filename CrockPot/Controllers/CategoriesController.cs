@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using CrockPot.Models;
 using Microsoft.AspNetCore.Authorization;
 using CrockPot.Services.IServices;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System.Diagnostics;
-
 namespace CrockPot.Controllers
 {
     [Authorize(Roles = "Admin")]
@@ -26,7 +22,7 @@ namespace CrockPot.Controllers
 
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _categoryService.CategoryExists(id.Value))
+            if (id == null || !_categoryService.CategoryExists(id.Value))
             {
                 return NotFound();
             }

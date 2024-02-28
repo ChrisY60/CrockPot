@@ -6,6 +6,6 @@ namespace CrockPot.Services.IServices
     {
         Task<List<SharedRecipe>> GetSharedRecipesAsync();
         Task<List<SharedRecipe>> GetSharedRecipesByReceiverAsync(string receiverId);
-        Task<bool> CreateSharedRecipeAsync(SharedRecipe newRecipe);
+        Task<bool> CreateSharedRecipeAsync(SharedRecipe sharedRecipe);
     }
 }

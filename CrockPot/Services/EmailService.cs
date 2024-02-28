@@ -31,8 +31,7 @@ namespace CrockPot.Services
             var subject = Subject;
             var to = new EmailAddress(TargetAddress, "CrockPot User");
             var plainTextContent = "";
-            var htmlContent = HtmlContent;
-            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, HtmlContent);
             var response = await client.SendEmailAsync(msg);
             if (!response.IsSuccessStatusCode)
             {
