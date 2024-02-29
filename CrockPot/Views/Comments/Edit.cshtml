@@ -9,10 +9,12 @@
 <h4>Comment</h4>
 <hr />
 <div class="row">
+    <p>@Model.Id</p>
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="Id"/>
+            <input type="hidden" asp-for="AuthorId" />
             <div class="form-group">
                 <label asp-for="Content" class="control-label"></label>
                 <input asp-for="Content" class="form-control" />

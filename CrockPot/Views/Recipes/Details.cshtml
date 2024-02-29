@@ -89,6 +89,7 @@
 <div style="display: flex;align-items: center;">
     @if (Model.CurrentRating != null)
     {
+       
         @for (int i = 1; i <= 5; i++)
         {
             var buttonId = $"rating-{i}";
@@ -101,6 +102,10 @@
                 <button id="@buttonId" class="rating-button" style="border: none;background: none;"> <img src="https://crockpotblob2005.blob.core.windows.net/images/star.png" alt="Star" style="width: 3vw; height: auto;" /></button>
             }
         }
+        <form id="deleteRatingForm" asp-controller="Ratings" asp-action="Delete">
+            <input type="hidden" name="id" value="@Model.CurrentRating.Id" />
+            <button type="submit">Remove Rating</button>
+        </form>
     }
     else
     {

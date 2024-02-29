@@ -1,5 +1,4 @@
 ﻿using CrockPot.Models;
-using CrockPot.Services;
 using CrockPot.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -31,27 +30,13 @@ namespace CrockPot.Controllers
                 if (!result)
                 {
                     ModelState.AddModelError(string.Empty, "Failed to create the comment. Please try again.");
-                    return View(comment);
                 }
-            }
-            else
-            {
-                Debug.WriteLine("Errors are tuk :) : ");
-                foreach (var modelStateEntry in ModelState.Values)
-                {
-                    foreach (var error in modelStateEntry.Errors)
-                    {
-
-                        Debug.WriteLine(error.ErrorMessage);
-                    }
-                }
-
             }
 
             return RedirectToAction("Details", "Recipes", new { id = comment.RecipeId });
         }
 
-
+        [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
             var comment = await _commentService.GetCommentByIdAsync(id);
@@ -64,17 +49,17 @@ namespace CrockPot.Controllers
             {
                 return StatusCode(403);
             }
-
             return View(comment);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Comment comment)
+        public async Task<IActionResult> Edit(int id, Comment comment)
         {
             if (ModelState.IsValid)
             {
-                var existingComment = await _commentService.GetCommentByIdAsync(comment.Id);
+                var existingComment = await _commentService.GetCommentByIdAsync(id);
+                
                 if (existingComment == null)
                 {
                     return NotFound();
@@ -96,23 +81,12 @@ namespace CrockPot.Controllers
 
                 return RedirectToAction("Details", "Recipes", new { id = existingComment.RecipeId });
             }
-            else
-            {
-                Debug.WriteLine("Errors are tuk :) : ");
-                foreach (var modelStateEntry in ModelState.Values)
-                {
-                    foreach (var error in modelStateEntry.Errors)
-                    {
-                        Debug.WriteLine(error.ErrorMessage);
-                    }
-                }
-            }
 
             return View(comment);
         }
 
 
-
+        [HttpGet]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || !_commentService.CommentExists(id.Value))
@@ -144,11 +118,6 @@ namespace CrockPot.Controllers
             }
 
             var recipeId = comment.RecipeId;
-
-            if (!_commentService.CommentExists(id))
-            {
-                return NotFound();
-            }
 
             var result = await _commentService.DeleteCommentAsync(id);
             if (!result)
