@@ -25,10 +25,11 @@
 
         <div class="display_box_text">
             <span>Name: </span>
-            @Html.Raw(Truncate(item.Name, 7))
-            <br>
-            <span>Description: </span>
-            @Html.Raw(Truncate(item.Description, 7))
+            @if(item.Name.Length > 10){
+                @Html.Raw(item.Name.Substring(0, 10) + "...");
+            }else{
+                @Html.Raw(item.Name);
+            }
             <br>
             <span>By: </span>
             @{
@@ -38,7 +39,13 @@
                     name = authorName;
                 }
             }
-            @Html.Raw(name)
+            @if (authorName.Length > 10)
+            {
+                @Html.Raw(authorName.Substring(0, 10) + "...");
+
+            }else{
+                @Html.Raw(authorName);
+            }
             <br>
             @if ((User.Identity.IsAuthenticated && User.Identity.Name == name) || User.IsInRole("Admin"))
             {
@@ -49,16 +56,3 @@
     </button>
 }
 
-@functions {
-    string Truncate(string input, int length)
-    {
-        if (input.Length <= length)
-        {
-            return input;
-        }
-        else
-        {
-            return input.Substring(0, length) + "...";
-        }
-    }
-}

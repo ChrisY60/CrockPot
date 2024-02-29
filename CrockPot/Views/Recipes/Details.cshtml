@@ -117,6 +117,7 @@
     }
 
     <form id="ratingForm" asp-controller="Ratings" asp-action="Create" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input type="hidden" name="RecipeId" value="@Model.Recipe.Id" />
         <input type="hidden" id="ratingValue" name="ratingValue" value="0" />
         <input type="hidden" name="AuthorId" value="@User.FindFirstValue(ClaimTypes.NameIdentifier)" />
@@ -149,6 +150,7 @@
 </div>
 
 <form asp-controller="Comments" asp-action="Create" method="post">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <input type="hidden" name="RecipeId" value="@Model.Recipe.Id" />
     <input name="Content" class="input-box" placeholder="Comment here">
     <input type="hidden" name="AuthorId" value="@User.FindFirstValue(ClaimTypes.NameIdentifier)" />
