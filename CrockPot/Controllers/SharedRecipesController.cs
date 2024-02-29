@@ -1,5 +1,6 @@
 ﻿using CrockPot.Models;
 using CrockPot.Services.IServices;
+using CrockPot.ViewModels.SharedRecipes;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,7 @@ namespace CrockPot.Controllers
             _userManager = userManager;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             var currentUser = await _userManager.GetUserAsync(User);
@@ -26,11 +28,19 @@ namespace CrockPot.Controllers
             {
                 return NotFound();
             }
+
             List<SharedRecipe> sharedRecipes = await _sharedRecipeService.GetSharedRecipesByReceiverAsync(currentUser.Id);
             Dictionary<string, string> senderNames = await GetSenderNames(sharedRecipes);
-            ViewData["SenderNames"] = senderNames;
-            return View(sharedRecipes);
+
+            var viewModel = new IndexSharedRecipeViewModel
+            {
+                SharedRecipes = sharedRecipes,
+                SenderNames = senderNames
+            };
+
+            return View(viewModel);
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -72,6 +82,10 @@ namespace CrockPot.Controllers
             {
                 var senderUser = await _userManager.FindByIdAsync(sharedRecipe.SenderId);
                 var senderName = senderUser?.UserName;
+                if (string.IsNullOrEmpty(senderName))
+                {
+                    senderName = "Unknown";
+                }
 
                 senderNames[sharedRecipe.SenderId] = senderName;
             }

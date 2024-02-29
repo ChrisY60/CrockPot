@@ -1,17 +1,13 @@
-﻿@model IEnumerable<CrockPot.Models.SharedRecipe>
+﻿@model CrockPot.ViewModels.SharedRecipes.IndexSharedRecipeViewModel
 
 @{
     ViewData["Title"] = "Shared with me";
 }
 
 <h1>Recipes Shared With You</h1>
-@{
-    Dictionary<string, string> senderNames = ViewData["SenderNames"] as Dictionary<string, string>; ;
-}
 
-@foreach (var item in Model)
+@foreach (var item in Model.SharedRecipes)
 {
-    
     <button class="display_box" onclick="window.location.href = 'Recipes/Details/' + @item.RecipeId;">
         <div class="display_box_image">
             @if (item.Recipe != null)
@@ -21,9 +17,8 @@
         </div>
 
         <div class="display_box_content">
-            <p>Shared by: @senderNames[item.SenderId]</p>
+            <p>Shared by: @Model.SenderNames[item.SenderId]</p>
             <p>Recipe Name: @item.Recipe.Name</p>
         </div>
-
     </button>
 }
