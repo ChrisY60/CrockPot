@@ -1,6 +1,7 @@
 ﻿@model IndexRecipeViewModel
-@using CrockPot.ViewModels.Recipes;
+@using CrockPot.ViewModels.Recipes
 @using Microsoft.AspNetCore.Identity
+@using System.Security.Claims
 
 @{
     ViewData["Title"] = "Recipes";
@@ -47,7 +48,7 @@
                 @Html.Raw(authorName);
             }
             <br>
-            @if ((User.Identity.IsAuthenticated && User.Identity.Name == name) || User.IsInRole("Admin"))
+            @if ((User.Identity.IsAuthenticated && User.FindFirstValue(ClaimTypes.NameIdentifier) == item.AuthorId) || User.IsInRole("Admin"))
             {
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
