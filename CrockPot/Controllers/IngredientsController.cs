@@ -18,12 +18,13 @@ namespace CrockPot.Controllers
             _ingredientService = ingredientService;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             var ingredients = await _ingredientService.GetIngredientsAsync();
             return View(ingredients);
         }
-
+        [HttpGet]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || !_ingredientService.IngredientExists(id.Value))
@@ -40,6 +41,7 @@ namespace CrockPot.Controllers
             return View(ingredient);
         }
 
+        [HttpGet]
         public IActionResult Create()
         {
             return View();
@@ -68,7 +70,8 @@ namespace CrockPot.Controllers
 
             return View(ingredient);
         }
-        
+
+        [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || !_ingredientService.IngredientExists(id.Value))
@@ -111,6 +114,7 @@ namespace CrockPot.Controllers
             return View(ingredient);
         }
 
+        [HttpGet]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || !_ingredientService.IngredientExists(id.Value))

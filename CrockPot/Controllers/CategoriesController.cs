@@ -14,21 +14,21 @@ namespace CrockPot.Controllers
             _categoryService = categoryService;
         }
 
-        
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             return View(await _categoryService.GetCategoriesAsync());
         }
 
+        [HttpGet]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || !_categoryService.CategoryExists(id.Value))
             {
                 return NotFound();
             }
-            var categories = await _categoryService.GetCategoriesAsync();
+            var category = await _categoryService.GetCategoryByIdAsync(id.Value);
 
-            var category = categories.FirstOrDefault(m => m.Id == id);
             if (category == null)
             {
                 return NotFound();
@@ -37,6 +37,7 @@ namespace CrockPot.Controllers
             return View(category);
         }
 
+        [HttpGet]
         public IActionResult Create()
         {
             return View();
@@ -68,7 +69,7 @@ namespace CrockPot.Controllers
         }
 
 
-
+        [HttpGet]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || !_categoryService.CategoryExists(id.Value))
@@ -110,18 +111,15 @@ namespace CrockPot.Controllers
             return View(category);
         }
 
+        [HttpGet]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            if (id == null || !_categoryService.CategoryExists(id.Value))
             {
                 return NotFound();
             }
 
             var category = await _categoryService.GetCategoryByIdAsync(id.Value);
-            if (category == null)
-            {
-                return NotFound();
-            }
 
             return View(category);
         }

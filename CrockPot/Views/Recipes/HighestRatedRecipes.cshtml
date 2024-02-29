@@ -1,13 +1,15 @@
-﻿@{
+﻿@model List<(Recipe, float)>
+
+@{
     ViewData["Title"] = "Highest Rated Recipes";
 }
 
 <h1>Highest Rated Recipes</h1>
 
-@if (ViewBag.HighestRatedRecipes != null)
+@if (Model != null && Model.Any())
 {
     <ul>
-        @foreach (var tuple in ViewBag.HighestRatedRecipes)
+        @foreach (var tuple in Model)
         {
             <li>@tuple.Item1.Name - Average Rating: @tuple.Item2</li>
         }
@@ -15,5 +17,5 @@
 }
 else
 {
-    <p>There are currently no high rated recipes.</p>
+    <p>There are currently no highly rated recipes.</p>
 }

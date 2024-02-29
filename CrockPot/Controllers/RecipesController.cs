@@ -34,6 +34,7 @@ namespace CrockPot.Controllers
             _blobService = blobService;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
             var recipes = await _recipeService.GetRecipesAsync();
@@ -48,7 +49,7 @@ namespace CrockPot.Controllers
             return View(viewModel);
         }
 
-
+        [HttpGet]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || !_recipeService.RecipeExists(id.Value))
@@ -67,7 +68,7 @@ namespace CrockPot.Controllers
             var authorName = author != null ? author.UserName : "Unknown";
             var averageRating = await _ratingService.GetAverageRatingByRecipeIdAsync(recipe.Id);
             var allUsers = await _userManager.Users.ToListAsync();
-            var currentRating = await GetUserRatingOnRecipeAsync(recipe.Id);
+            var currentRating = await _ratingService.GetUserRatingOnRecipeAsync(User.FindFirstValue(ClaimTypes.NameIdentifier), recipe.Id);
 
             var viewModel = new DetailsRecipeViewModel
             {
@@ -81,7 +82,7 @@ namespace CrockPot.Controllers
             return View(viewModel);
         }
 
-
+        [HttpGet]
         public async Task<IActionResult> Create()
         {
             var viewModel = new CreateRecipeViewModel
@@ -107,24 +108,21 @@ namespace CrockPot.Controllers
 
             if (ModelState.IsValid)
             {
-                if (viewModel.ImageFile != null)
+                var allowedExtensions = new[] { ".png", ".jpg", ".jpeg", ".svg" };
+
+                var fileExtension = Path.GetExtension(viewModel.ImageFile.FileName).ToLower();
+
+                if (allowedExtensions.Contains(fileExtension))
                 {
-                    var allowedExtensions = new[] { ".png", ".jpg", ".jpeg", ".svg" };
-
-                    var fileExtension = Path.GetExtension(viewModel.ImageFile.FileName).ToLower();
-
-                    if (allowedExtensions.Contains(fileExtension))
-                    {
-                        var imageUrl = await _blobService.UploadImageAsync(viewModel.ImageFile);
-                        recipe.ImageUrl = imageUrl;
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("Image", "Invalid file type. Please upload a PNG, JPG, JPEG, or SVG image.");
-                        return View(viewModel);
-                    }
+                    var imageUrl = await _blobService.UploadImageAsync(viewModel.ImageFile);
+                    recipe.ImageUrl = imageUrl;
                 }
-
+                else
+                {
+                    ModelState.AddModelError("Image", "Invalid file type. Please upload a PNG, JPG, JPEG, or SVG image.");
+                    return View(viewModel);
+                }
+                
                 var result = await _recipeService.CreateRecipeAsync(recipe, viewModel.SelectedCategories, viewModel.SelectedIngredients);
                 if (!result)
                 {
@@ -139,12 +137,22 @@ namespace CrockPot.Controllers
             return View(viewModel);
         }
 
-
-        public async Task<IActionResult> Edit(int id)
+        [HttpGet]
+        public async Task<IActionResult> Edit(int? id)
         {
-            var recipe = await _recipeService.GetRecipeByIdAsync(id);
+            if(id == null || !_recipeService.RecipeExists(id.Value))
+            {
+                return NotFound();
+            }
+            
+            var recipe = await _recipeService.GetRecipeByIdAsync(id.Value);
             var categories = await _categoryService.GetCategoriesAsync();
             var ingredients = await _ingredientService.GetIngredientsAsync();
+
+            if (User.FindFirstValue(ClaimTypes.NameIdentifier) != recipe.AuthorId && !User.IsInRole("Admin"))
+            {
+                return StatusCode(403);
+            }
 
             var viewModel = new EditRecipeViewModel
             {
@@ -171,7 +179,10 @@ namespace CrockPot.Controllers
                 {
                     return NotFound();
                 }
-
+                if (User.FindFirstValue(ClaimTypes.NameIdentifier) != recipe.AuthorId && !User.IsInRole("Admin"))
+                {
+                    return StatusCode(403);
+                }
                 recipe.Name = viewModel.Name;
                 recipe.Description = viewModel.Description;
 
@@ -190,14 +201,13 @@ namespace CrockPot.Controllers
 
                 return RedirectToAction(nameof(Index));
             }
-            Debug.WriteLine("Something went wrong");
             viewModel.AllIngredients = await _ingredientService.GetIngredientsAsync();
             viewModel.AllCategories = await _categoryService.GetCategoriesAsync();
             return View(viewModel);
         }
 
 
-
+        [HttpGet]
         public async Task<IActionResult> Delete(int? id)
         {
 
@@ -206,7 +216,9 @@ namespace CrockPot.Controllers
                 return NotFound();
             }
 
+
             var recipe = await _recipeService.GetRecipeByIdAsync(id.Value);
+
             if (recipe == null)
             {
                 return NotFound();
@@ -234,18 +246,18 @@ namespace CrockPot.Controllers
                 return StatusCode(403);
             }
 
-            if (_recipeService.RecipeExists(id))
+            
+            var result = await _recipeService.DeleteRecipeAsync(id);
+            if (!result)
             {
-                var result = await _recipeService.DeleteRecipeAsync(id);
-                if (!result)
-                {
-                    return BadRequest("Failed to delete the recipe. Please try again.");
-                }
+                return BadRequest("Failed to delete the recipe. Please try again.");
             }
+            
 
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpGet]
         public async Task<IActionResult> RecipeSearch()
         {
             var viewModel = new SearchRecipeViewModel
@@ -256,6 +268,7 @@ namespace CrockPot.Controllers
             return View("RecipeSearch", viewModel);
         }
 
+        [HttpGet]
         public async Task<IActionResult> SearchByFilter(string name, int[] selectedCategories, int[] selectedIngredients)
         {
             var recipes = await _recipeService.GetAllRecipesByFilterAsync(name, selectedCategories, selectedIngredients);
@@ -270,14 +283,14 @@ namespace CrockPot.Controllers
             return View("Index", viewModel);
         }
 
-
+        [HttpGet]
         public async Task<IActionResult> HighestRatedRecipes()
         {
-            ViewBag.HighestRatedRecipes = await _ratingService.GetHighestRatedRecipesAsync();
-            return View("HighestRatedRecipes");
+            var highestRatedRecipes = await _ratingService.GetHighestRatedRecipesAsync();
+            return View("HighestRatedRecipes", highestRatedRecipes);
         }
 
-        public async Task<Dictionary<string, string>> GetAuthorsNames(List<Recipe>Recipes){
+        private async Task<Dictionary<string, string>> GetAuthorsNames(List<Recipe>Recipes){
             var authorsNames = new Dictionary<string, string>();
 
             foreach(Recipe r in Recipes){
@@ -290,12 +303,7 @@ namespace CrockPot.Controllers
             return authorsNames;
         }
 
-        public async Task<Rating> GetUserRatingOnRecipeAsync(int recipeId)
-        {
-            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            return await _ratingService.GetUserRatingOnRecipeAsync(userId, recipeId);
-        }
-
+       
 
 
     }

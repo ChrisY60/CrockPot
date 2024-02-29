@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using CrockPot.Models;
+﻿using CrockPot.Models;
 
 namespace CrockPot.ViewModels.Recipes
 {
