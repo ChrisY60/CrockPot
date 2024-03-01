@@ -35,7 +35,7 @@ namespace CrockPot.Controllers
             var viewModel = new IndexSharedRecipeViewModel
             {
                 SharedRecipes = sharedRecipes,
-                SenderNames = senderNames
+                SendersNames = senderNames
             };
 
             return View(viewModel);

@@ -16,11 +16,6 @@ string containerName = "images";
 
 BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient(containerName);
 
-if (!await containerClient.ExistsAsync())
-{
-    await containerClient.CreateAsync();
-}
-
 
 var builder = WebApplication.CreateBuilder(args);
 

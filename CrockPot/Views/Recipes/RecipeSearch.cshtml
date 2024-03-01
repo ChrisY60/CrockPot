@@ -4,85 +4,83 @@
     ViewData["Title"] = "Recipe Search";
 }
 
-<body class="body_home">
-    <div class="ui_box">
-        <h1 class="display-4">Welcome to CrockPot</h1>
-        <h2>Find your perfect recipe</h2>
+<div class="ui_box">
+    <h2>Find your perfect recipe</h2>
+    
+    <form asp-controller="Recipes" asp-action="SearchByFilter" method="get">
+        <input type="text" name="Name" placeholder="Enter recipe name" />
 
-        <form asp-controller="Recipes" asp-action="SearchByFilter" method="get">
-            <input type="text" name="Name" placeholder="Enter recipe name" />
-
-            <div>
-                <label>Select Ingredients</label>
-                <br>
-                <input class="input-box" type="text" placeholder="Search..." id="ingredientsSearch">
-                <div class="scrollable-container">
-                    @foreach (var ingredient in Model.AllIngredients)
-                    {
-                        <div>
-                            <input type="checkbox" name="SelectedIngredients" value="@ingredient.Id">
-                            <label>@ingredient.Name</label>
-                        </div>
-                    }
-                </div>
+        <div>
+            <label>Select Ingredients</label>
+            <br>
+            <input class="input-box" type="text" placeholder="Search..." id="ingredientsSearch">
+            <div class="scrollable-container">
+                @foreach (var ingredient in Model.AllIngredients)
+                {
+                    <div>
+                        <input type="checkbox" name="SelectedIngredients" value="@ingredient.Id">
+                        <label>@ingredient.Name</label>
+                    </div>
+                }
             </div>
+        </div>
 
-            <div>
-                <label>Select Categories</label>
-                <br />
-                <input class="input-box" type="text" placeholder="Search..." id="categoriesSearch">
-                <div class="scrollable-container">
-                    @foreach (var category in Model.AllCategories)
-                    {
-                        <div>
-                            <input type="checkbox" name="SelectedCategories" value="@category.Id">
-                            <label>@category.Name</label>
-                        </div>
-                    }
-                </div>
-            </div>
+        <div>
+            <label>Select Categories</label>
             <br />
-
-            <button type="submit">Search</button>
-        </form>
-
-        @section Scripts {
-            <script>
-                function filterCategoriesCheckboxes() {
-                    var searchCategoryValue = document.getElementById("categoriesSearch").value.toLowerCase();
-                    var categoryCheckboxes = document.querySelectorAll('input[name="SelectedCategories"]');
-
-                    categoryCheckboxes.forEach(function (checkbox) {
-                        var label = checkbox.nextElementSibling;
-                        var categoryName = label.textContent.toLowerCase();
-
-                        if (categoryName.includes(searchCategoryValue)) {
-                            checkbox.parentNode.style.display = 'block';
-                        } else {
-                            checkbox.parentNode.style.display = 'none';
-                        }
-                    });
+            <input class="input-box" type="text" placeholder="Search..." id="categoriesSearch">
+            <div class="scrollable-container">
+                @foreach (var category in Model.AllCategories)
+                {
+                    <div>
+                        <input type="checkbox" name="SelectedCategories" value="@category.Id">
+                        <label>@category.Name</label>
+                    </div>
                 }
+            </div>
+        </div>
+        <br />
 
-                function filterIngredientsCheckboxes() {
-                    var searchIngredientValue = document.getElementById("ingredientsSearch").value.toLowerCase();
-                    var ingredientCheckboxes = document.querySelectorAll('input[name="SelectedIngredients"]');
+        <button type="submit">Search</button>
+    </form>
 
-                    ingredientCheckboxes.forEach(function (checkbox) {
-                        var label = checkbox.nextElementSibling;
-                        var ingredientName = label.textContent.toLowerCase();
+    @section Scripts {
+        <script>
+            function filterCategoriesCheckboxes() {
+                var searchCategoryValue = document.getElementById("categoriesSearch").value.toLowerCase();
+                var categoryCheckboxes = document.querySelectorAll('input[name="SelectedCategories"]');
 
-                        if (ingredientName.includes(searchIngredientValue)) {
-                            checkbox.parentNode.style.display = 'block';
-                        } else {
-                            checkbox.parentNode.style.display = 'none';
-                        }
-                    });
-                }
+                categoryCheckboxes.forEach(function (checkbox) {
+                    var label = checkbox.nextElementSibling;
+                    var categoryName = label.textContent.toLowerCase();
 
-                document.getElementById("categoriesSearch").addEventListener("input", filterCategoriesCheckboxes);
+                    if (categoryName.includes(searchCategoryValue)) {
+                        checkbox.parentNode.style.display = 'block';
+                    } else {
+                        checkbox.parentNode.style.display = 'none';
+                    }
+                });
+            }
 
-                document.getElementById("ingredientsSearch").addEventListener("input", filterIngredientsCheckboxes);
-            </script>
-        }
-</body>
+            function filterIngredientsCheckboxes() {
+                var searchIngredientValue = document.getElementById("ingredientsSearch").value.toLowerCase();
+                var ingredientCheckboxes = document.querySelectorAll('input[name="SelectedIngredients"]');
+
+                ingredientCheckboxes.forEach(function (checkbox) {
+                    var label = checkbox.nextElementSibling;
+                    var ingredientName = label.textContent.toLowerCase();
+
+                    if (ingredientName.includes(searchIngredientValue)) {
+                        checkbox.parentNode.style.display = 'block';
+                    } else {
+                        checkbox.parentNode.style.display = 'none';
+                    }
+                });
+            }
+
+            document.getElementById("categoriesSearch").addEventListener("input", filterCategoriesCheckboxes);
+
+            document.getElementById("ingredientsSearch").addEventListener("input", filterIngredientsCheckboxes);
+        </script>
+    }
+</div>
