@@ -72,15 +72,15 @@
 {
     if (i <= Model.AverageRating)
     {
-        <img src="https://crockpotblob2005.blob.core.windows.net/images/star_checked.png" alt="Star" style="width: 3vw; height: auto;" />
+        <img src="https://crockpotblob2005.blob.core.windows.net/images/green_star_checked.png" alt="Star" style="width: 3vw; height: auto;" />
     }
     else if (i - 0.5 <= Model.AverageRating)
     {
-        <img src="https://crockpotblob2005.blob.core.windows.net/images/star_semi_checked.png" alt="Star" style="width: 3vw; height: auto;" />
+        <img src="https://crockpotblob2005.blob.core.windows.net/images/green_star_half_checked.png" alt="Star" style="width: 3vw; height: auto;" />
     }
     else
     {
-        <img src="https://crockpotblob2005.blob.core.windows.net/images/star.png" alt="Star" style="width: 3vw; height: auto;" />
+        <img src="https://crockpotblob2005.blob.core.windows.net/images/green_star_unchecked.png" alt="Star" style="width: 3vw; height: auto;" />
     }
 }
 <br><br>
@@ -95,16 +95,16 @@
             var buttonId = $"rating-{i}";
             if (i <= Model.CurrentRating.RatingValue)
             {
-                <button id="@buttonId" class="rating-button" style="border: none;background: none;"> <img src="https://crockpotblob2005.blob.core.windows.net/images/star_checked.png" alt="Star" style="width: 3vw; height: auto;" /></button>
+                <button id="@buttonId" class="rating-button" style="border: none;background: none;"> <img src="https://crockpotblob2005.blob.core.windows.net/images/green_star_checked.png" alt="Star" style="width: 3vw; height: auto;" /></button>
             }
             else
             {
-                <button id="@buttonId" class="rating-button" style="border: none;background: none;"> <img src="https://crockpotblob2005.blob.core.windows.net/images/star.png" alt="Star" style="width: 3vw; height: auto;" /></button>
+                <button id="@buttonId" class="rating-button" style="border: none;background: none;"> <img src="https://crockpotblob2005.blob.core.windows.net/images/green_star_unchecked.png" alt="Star" style="width: 3vw; height: auto;" /></button>
             }
         }
         <form id="deleteRatingForm" asp-controller="Ratings" asp-action="Delete">
             <input type="hidden" name="id" value="@Model.CurrentRating.Id" />
-            <button type="submit">Remove Rating</button>
+            <button class="normal_button" type="submit">Remove Rating</button>
         </form>
     }
     else
@@ -112,7 +112,7 @@
         @for (int i = 1; i <= 5; i++)
         {
             var buttonId = $"rating-{i}";
-            <button id="@buttonId" class="rating-button" style="border: none;background: none;"> <img src="https://crockpotblob2005.blob.core.windows.net/images/star.png" alt="Star" style="width: 3vw; height: auto;" /></button>
+            <button id="@buttonId" class="rating-button" style="border: none;background: none;"> <img src="https://crockpotblob2005.blob.core.windows.net/images/green_star_unchecked.png" alt="Star" style="width: 3vw; height: auto;" /></button>
         }
     }
 
@@ -121,7 +121,7 @@
         <input type="hidden" name="RecipeId" value="@Model.Recipe.Id" />
         <input type="hidden" id="ratingValue" name="ratingValue" value="0" />
         <input type="hidden" name="AuthorId" value="@User.FindFirstValue(ClaimTypes.NameIdentifier)" />
-        <button type="submit">Submit Rating</button>
+        <button class="normal_button" type="submit">Submit Rating</button>
     </form>
 </div>
 
@@ -154,7 +154,7 @@
     <input type="hidden" name="RecipeId" value="@Model.Recipe.Id" />
     <input name="Content" class="input-box" placeholder="Comment here">
     <input type="hidden" name="AuthorId" value="@User.FindFirstValue(ClaimTypes.NameIdentifier)" />
-    <button type="submit">Submit Comment</button>
+    <button class="normal_button" type="submit">Submit Comment</button>
 </form>
 
 <hr />
@@ -176,7 +176,7 @@
             }
         </select>
 
-        <button type="submit">Share Recipe</button>
+        <button class="normal_button" type="submit">Share Recipe</button>
     </form>
 </div>
 
@@ -195,9 +195,9 @@
                 var img = ratingButtons[j].querySelector("img");
 
                 if (buttonId <= clickedButtonId) {
-                    img.src = "https://crockpotblob2005.blob.core.windows.net/images/star_checked.png";
+                    img.src = "https://crockpotblob2005.blob.core.windows.net/images/green_star_checked.png";
                 } else {
-                    img.src = "https://crockpotblob2005.blob.core.windows.net/images/star.png";
+                    img.src = "https://crockpotblob2005.blob.core.windows.net/images/green_star_unchecked.png";
                 }
             }
 

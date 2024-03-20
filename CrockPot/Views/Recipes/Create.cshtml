@@ -6,9 +6,11 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Create</h1>
+<div style="text-align:center;">
+    <h1>Create</h1>
 
-<h4>Recipe</h4>
+    <h4>Recipe</h4>
+</div>
 <hr>
 <div class="ui_box">
     <form asp-action="Create" method="post" enctype="multipart/form-data">
@@ -23,7 +25,7 @@
         <div>
             <label asp-for="Description" class="control-label"></label>
             <br>
-            <input class="input-box" asp-for="Description" />
+            <textarea class="textarea-box" asp-for="Description"></textarea>
             <span asp-validation-for="Description" class="text-danger"></span>
         </div>
 
@@ -64,7 +66,7 @@
         </div>
 
         <div>
-            <input class="button-big" type="submit" value="Create" />
+            <input class="normal_button" type="submit" value="Create" />
         </div>
     </form>
 </div>

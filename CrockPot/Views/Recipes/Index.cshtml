@@ -35,7 +35,7 @@
             <span>By: </span>
             @{
                 string name = "Unknown";
-                if (Model.AuthorNames.TryGetValue(item.AuthorId, out var authorName))
+                if (Model.AuthorsNames.TryGetValue(item.AuthorId, out var authorName))
                 {
                     name = authorName;
                 }

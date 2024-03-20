@@ -1,4 +1,5 @@
-﻿using CrockPot.Models;
+﻿using CrockPot.Data.Migrations;
+using CrockPot.Models;
 using CrockPot.Services.IServices;
 using CrockPot.ViewModels.SharedRecipes;
 using Microsoft.AspNetCore.Authorization;
@@ -32,10 +33,17 @@ namespace CrockPot.Controllers
             List<SharedRecipe> sharedRecipes = await _sharedRecipeService.GetSharedRecipesByReceiverAsync(currentUser.Id);
             Dictionary<string, string> senderNames = await GetSenderNames(sharedRecipes);
 
+            var timeDifference = new Dictionary<int, string>();
+            foreach (var sharedRecipe in sharedRecipes){
+                timeDifference[sharedRecipe.Id] = CalculateTimeDifference(sharedRecipe.TimeOfSending, DateTime.Now);
+            }
+
+
             var viewModel = new IndexSharedRecipeViewModel
             {
                 SharedRecipes = sharedRecipes,
-                SendersNames = senderNames
+                SendersNames = senderNames,
+                TimeDifference = timeDifference
             };
 
             return View(viewModel);
@@ -67,11 +75,10 @@ namespace CrockPot.Controllers
                 if (!result)
                 {
                     ModelState.AddModelError(string.Empty, "Failed to share the recipe, please try again");
-                    return View(newSharedRecipe);
                 }
-                return RedirectToAction("Details", "Recipes", new { id = RecipeId });
+                
             }
-            return View(newSharedRecipe);
+            return RedirectToAction("Details", "Recipes", new { id = RecipeId });
         }
 
         private async Task<Dictionary<string, string>> GetSenderNames(List<SharedRecipe> sharedRecipes)
@@ -92,6 +99,31 @@ namespace CrockPot.Controllers
 
             return senderNames;
         }
+        private string CalculateTimeDifference(DateTime startDateTime, DateTime endDateTime)
+        {
+            TimeSpan timeDifference = endDateTime - startDateTime;
+
+            if (timeDifference.TotalDays >= 1)
+            {
+                int days = (int)timeDifference.TotalDays;
+                return days == 1 ? "1 day ago" : $"{days} days ago";
+            }
+            else if (timeDifference.TotalHours >= 1)
+            {
+                int hours = (int)timeDifference.TotalHours;
+                return hours == 1 ? "1 hour ago" : $"{hours} hours ago";
+            }
+            else if (timeDifference.TotalMinutes >= 1)
+            {
+                int minutes = (int)timeDifference.TotalMinutes;
+                return minutes == 1 ? "1 minute ago" : $"{minutes} minutes ago";
+            }
+            else
+            {
+                return "Just now";
+            }
+        }
+
 
     }
 }

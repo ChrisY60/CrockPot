@@ -6,6 +6,6 @@ namespace CrockPot.ViewModels.SharedRecipes
     {
         public List<SharedRecipe> SharedRecipes { get; set; }
         public Dictionary<string, string> SendersNames { get; set; }
+        public Dictionary<int, string> TimeDifference { get; set; }
     }
 }
-

@@ -1,4 +1,5 @@
 html {
+    
     font-size: 14px;
 }
 
@@ -14,23 +15,21 @@ html {
 }
 
 body {
-    background-color: #e29ef0;
+    color: #0f4a38;
+    background-color: #6D835C;
+    background-image: linear-gradient(#6D835C, #1d8a69);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
 }
 
-.body_home {
-    background-color: #e29ef0;
-    background-image: url('../Images/background6-new.png');
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-}
 
 a {
-    color: #68029c;
+    color: #0f4a38;
 }
 
 .scrollable-container {
-    border: 2px solid #68029c;
+    border: 2px solid #0f4a38;
     border-radius: 5px;
     width: 30vw;
     height: 20vh;
@@ -40,27 +39,30 @@ a {
     .scrollable-container::-webkit-scrollbar {
         width: 5px;
         border-radius: 5px;
-        background-color: #a95fb8;
+        background-color: #1a7a5d;
     }
 
     .scrollable-container::-webkit-scrollbar-thumb {
-        background: #68029c;
+        background: #0f4a38;
         border-radius: 10px;
     }
 
 .input-box {
+    border: none;
+    background-color: #b9dbad;
     border-radius: 10px;
 }
 
 
 
 .display_box {
+    color: #0f4a38;
     border: none;
     display: inline-flex;
     margin-block: 10px;
     padding-right: 20px;
     border-radius: 10px;
-    background-color: #C67FD3;
+    background-color: #729C65;
     width: 25vw;
     min-width: 300px;
     height: 10vw;
@@ -68,7 +70,7 @@ a {
 }
 
     .display_box:hover {
-        background-color: #C159D4;
+        background-color: #78a36a;
     }
 
 .display_box_text {
@@ -99,10 +101,10 @@ a {
     margin: 10px auto;
     padding: 20px;
     border-radius: 10px;
-    background-color: #C67FD3;
+    background-color: #90ad87;
     width: 40vw;
     min-width: 300px;
-    height: 90vh;
+    height: 150vh;
 }
 
 
@@ -110,4 +112,33 @@ a {
     width: 20vh;
     min-width: 300px;
     height: auto;
+}
+
+.normal_button {
+    background-color: #729C65;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    color: #0f4a38;
+    font-size: 16px;
+    cursor: pointer;
+    margin-right: 10px;
+    margin-top: 5px;
+    transition: background-color 0.3s ease;
+}
+
+    .normal_button:hover {
+        background-color: #639154;
+    }
+
+
+.textarea-box {
+    background-color: #b9dbad;
+    width: 100%;
+    min-width: 200px;
+    max-width: 500px;
+    height: 150px;
+    padding: 5px;
+    resize: vertical;
+    border-radius: 10px;
 }

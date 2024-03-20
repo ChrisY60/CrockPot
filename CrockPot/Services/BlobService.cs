@@ -14,7 +14,7 @@ namespace CrockPot.Services
                 var blobServiceClient = new BlobServiceClient(
                     new Uri("https://crockpotblob2005.blob.core.windows.net"),
                     new DefaultAzureCredential());
-
+                    
                 BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
                  
                 if (await containerClient.ExistsAsync())

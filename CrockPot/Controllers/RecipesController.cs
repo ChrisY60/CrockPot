@@ -43,7 +43,7 @@ namespace CrockPot.Controllers
             var viewModel = new IndexRecipeViewModel
             {
                 Recipes = recipes,
-                AuthorNames = authorsNames
+                AuthorsNames = authorsNames
             };
 
             return View(viewModel);
@@ -277,7 +277,7 @@ namespace CrockPot.Controllers
             var viewModel = new IndexRecipeViewModel
             {
                 Recipes = recipes,
-                AuthorNames = authorsNames
+                AuthorsNames = authorsNames
             };
 
             return View("Index", viewModel);

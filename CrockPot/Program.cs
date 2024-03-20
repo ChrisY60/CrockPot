@@ -29,8 +29,15 @@ var credential = new ClientSecretCredential(keyVaultDirectoryId, keyVaultClientI
 var secretClient = new SecretClient(new Uri(keyVaultUrl), credential);
 
 var connectionString = (await secretClient.GetSecretAsync("ConnectionString")).Value.Value;
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+{
+    options.UseSqlServer(connectionString, sqlOptions =>
+    {
+        sqlOptions.EnableRetryOnFailure();
+    });
+});
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)

@@ -45,7 +45,7 @@ namespace CrockPot.Services
 
             return 0;
         }
-        public async Task<bool> CreateRatingAsync(Rating rating)
+        public async Task<bool> SubmitRatingAsync(Rating rating)
         {
             try
             {

@@ -4,11 +4,14 @@
     ViewData["Title"] = "Recipe Search";
 }
 
+<div style="text-align:center;">
+    <h1>Find your perfect recipe</h1>
+</div>
+<hr />
 <div class="ui_box">
-    <h2>Find your perfect recipe</h2>
     
     <form asp-controller="Recipes" asp-action="SearchByFilter" method="get">
-        <input type="text" name="Name" placeholder="Enter recipe name" />
+        <input type="text" class="input-box" name="Name" placeholder="Enter recipe name" />
 
         <div>
             <label>Select Ingredients</label>
@@ -41,7 +44,7 @@
         </div>
         <br />
 
-        <button type="submit">Search</button>
+        <button class="normal_button" type="submit">Search</button>
     </form>
 
     @section Scripts {

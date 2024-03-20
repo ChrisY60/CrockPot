@@ -8,10 +8,26 @@
 
 @if (Model != null && Model.Any())
 {
+    int place = 0;
     <ul>
         @foreach (var tuple in Model)
         {
-            <li>@tuple.Item1.Name - Average Rating: @tuple.Item2</li>
+            place++;
+            if(place == 1)
+            {
+                <li style="background-color: gold; width:20vw">1st @tuple.Item1.Name - Average Rating: @tuple.Item2</li>
+            }else if (place == 2)
+            {
+                <li style="background-color: silver; width:20vw">2nd @tuple.Item1.Name - Average Rating: @tuple.Item2</li>
+            }else if (place == 3)
+            {
+                <li style="background-color: #CD853F; width:20vw">3rd @tuple.Item1.Name - Average Rating: @tuple.Item2</li>
+            }
+            else
+            {
+                <li>@tuple.Item1.Name - Average Rating: @tuple.Item2</li>
+            }
+
         }
     </ul>
 }

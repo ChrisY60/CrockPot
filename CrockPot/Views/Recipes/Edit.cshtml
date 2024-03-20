@@ -5,60 +5,61 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<div style="text-align:center;">
+    <h1>Edit</h1>
 
-<h4>Recipe</h4>
+    <h4>Recipe</h4>
+</div>
+
 <hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="All" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
+<div class="ui_box">
+    <form asp-action="Edit">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <input type="hidden" asp-for="Id" />
+        <div class="form-group">
+            <label asp-for="Name" class="control-label"></label>
+            <input class="input-box" asp-for="Name" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Description" class="control-label"></label>
+            <textarea class="textarea-box" asp-for="Description"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label>Select Ingredients</label>
+            <br>
+            <input class="input-box" type="text" placeholder="Search..." id="ingredientsSearch">
+            <div class="scrollable-container">
+                @foreach (var ingredient in Model.AllIngredients)
+                {
+                    <div>
+                        <input type="checkbox" name="SelectedIngredients" value="@ingredient.Id" @(Model.SelectedIngredients != null && Model.SelectedIngredients.Contains(ingredient.Id) ? "checked" : "")>
+                        <label>@ingredient.Name</label>
+                    </div>
+                }
             </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label>Select Ingredients</label>
-                <br>
-                <input class="input-box" type="text" placeholder="Search..." id="ingredientsSearch">
-                <div class="scrollable-container">
-                    @foreach (var ingredient in Model.AllIngredients)
-                    {
-                        <div>
-                            <input type="checkbox" name="SelectedIngredients" value="@ingredient.Id" @(Model.SelectedIngredients != null && Model.SelectedIngredients.Contains(ingredient.Id) ? "checked" : "")>
-                            <label>@ingredient.Name</label>
-                        </div>
-                    }
-                </div>
-            </div>
-            <div class="form-group">
-                <label>Select Categories</label>
-                <br />
-                <input class="input-box" type="text" placeholder="Search..." id="categoriesSearch">
-                <div class="scrollable-container">
-                    @foreach (var category in Model.AllCategories)
-                    {
-                        <div>
-                            <input type="checkbox" name="SelectedCategories" value="@category.Id" @(Model.SelectedCategories != null && Model.SelectedCategories.Contains(category.Id) ? "checked" : "")>
-                            <label>@category.Name</label>
-                        </div>
-                    }
-                </div>
-            </div>
+        </div>
+        <div class="form-group">
+            <label>Select Categories</label>
             <br />
-
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+            <input class="input-box" type="text" placeholder="Search..." id="categoriesSearch">
+            <div class="scrollable-container">
+                @foreach (var category in Model.AllCategories)
+                {
+                    <div>
+                        <input type="checkbox" name="SelectedCategories" value="@category.Id" @(Model.SelectedCategories != null && Model.SelectedCategories.Contains(category.Id) ? "checked" : "")>
+                        <label>@category.Name</label>
+                    </div>
+                }
             </div>
-        </form>
-    </div>
+        </div>
+        <br />
+
+        <div class="form-group">
+            <input class="normal_button" type="submit" value="Save" class="btn btn-primary" />
+        </div>
+    </form>
 </div>
 
 <div>

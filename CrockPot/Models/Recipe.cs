@@ -9,12 +9,11 @@
         public string AuthorId { get; set; }
         public ICollection<Category> Categories { get; set; } = new List<Category>();
 
-        public ICollection<Comment> Comments { get; set; }
+        public ICollection<Comment>? Comments { get; set; }
 
-        public ICollection<Rating> Ratings { get; set; }
+        public ICollection<Rating>? Ratings { get; set; }
 
         public string ImageUrl { get; set; }
 
-        public Recipe() { }
     }
 }

@@ -17,15 +17,15 @@ namespace CrockPot.Controllers
         }
 
 
-        [HttpPost]
+        [HttpPost, ActionName("Create")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Rating rating)
+        public async Task<IActionResult> Submit(Rating rating)
         {
             rating.AuthorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (ModelState.IsValid)
             {
-                var result = await _ratingService.CreateRatingAsync(rating);
+                var result = await _ratingService.SubmitRatingAsync(rating);
                 if (!result)
                 {
                     ModelState.AddModelError(string.Empty, "Failed to create the rating. Please try again.");

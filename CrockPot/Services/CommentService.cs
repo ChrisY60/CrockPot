@@ -21,7 +21,9 @@ namespace CrockPot.Services
 
         public async Task<Comment> GetCommentByIdAsync(int id)
         {
-            return await _context.Comments.FindAsync(id);
+            return await _context.Comments
+                .Include(r => r.Recipe)
+                .FirstOrDefaultAsync(m => m.Id == id);
         }
 
         public async Task<bool> CreateCommentAsync(Comment comment)
