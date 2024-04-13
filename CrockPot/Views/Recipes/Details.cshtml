@@ -7,180 +7,179 @@
 @{
     ViewData["Title"] = "Details";
 }
+<body class="padding-body">
+    <h1>@Model.Recipe.Name</h1>
+    <hr>
 
-<h1>@Model.Recipe.Name</h1>
-<hr>
+    <div style="display: flex">
+        <dl>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Recipe.Name)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Recipe.Name)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Recipe.Description)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Recipe.Description)
+            </dd>
+            <dt class="col-sm-2">
+                Ingredients
+            </dt>
+            <dd class="col-sm-10">
+                <ul>
+                    @foreach (var ingredient in Model.Recipe.Ingredients)
+                    {
+                        <li>@ingredient.Name</li>
+                    }
+                </ul>
+            </dd>
+            <dt class="col-sm-2">
+                <p>Author</p>
+            </dt>
+            <dd class="col-sm-10">
+                @Model.AuthorName
+            </dd>
+            <dt class="col-sm-2">
+                Categories
+            </dt>
+            <dd class="col-sm-10">
+                <ul>
+                    @foreach (var category in Model.Recipe.Categories)
+                    {
+                        <li>@category.Name</li>
+                    }
+                </ul>
+            </dd>
+        </dl>
 
-<div style="display: flex">
-    <dl>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Recipe.Name)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Recipe.Name)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Recipe.Description)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Recipe.Description)
-        </dd>
-        <dt class="col-sm-2">
-            Ingredients
-        </dt>
-        <dd class="col-sm-10">
-            <ul>
-                @foreach (var ingredient in Model.Recipe.Ingredients)
-                {
-                    <li>@ingredient.Name</li>
-                }
-            </ul>
-        </dd>
-        <dt class="col-sm-2">
-            <p>Author</p>
-        </dt>
-        <dd class="col-sm-10">
-            @Model.AuthorName
-        </dd>
-        <dt class="col-sm-2">
-            Categories
-        </dt>
-        <dd class="col-sm-10">
-            <ul>
-                @foreach (var category in Model.Recipe.Categories)
-                {
-                    <li>@category.Name</li>
-                }
-            </ul>
-        </dd>
-    </dl>
+        <div>
+            <img src="@Model.Recipe.ImageUrl" alt="Image" style="width: 20vw; height: auto;" />
+        </div>
 
-    <div>
-        <img src="@Model.Recipe.ImageUrl" alt="Image" style="width: 20vw; height: auto;" />
     </div>
 
-</div>
 
+    <hr />
+    <h4>Rating</h4>
+    <div>
+        <h6>Average Rating: @Model.AverageRating</h6>
+    </div>
 
-<hr />
-<h4>Rating</h4>
-<div>
-    <h6>Average Rating: @Model.AverageRating</h6>
-</div>
-
-@for (int i = 1; i <= 5; i++)
-{
-    if (i <= Model.AverageRating)
+    @for (int i = 1; i <= 5; i++)
     {
-        <img src="https://crockpotblob2005.blob.core.windows.net/images/green_star_checked.png" alt="Star" style="width: 3vw; height: auto;" />
-    }
-    else if (i - 0.5 <= Model.AverageRating)
-    {
-        <img src="https://crockpotblob2005.blob.core.windows.net/images/green_star_half_checked.png" alt="Star" style="width: 3vw; height: auto;" />
-    }
-    else
-    {
-        <img src="https://crockpotblob2005.blob.core.windows.net/images/green_star_unchecked.png" alt="Star" style="width: 3vw; height: auto;" />
-    }
-}
-<br><br>
-
-<h4>Submit your rating</h4>
-<div style="display: flex;align-items: center;">
-    @if (Model.CurrentRating != null)
-    {
-       
-        @for (int i = 1; i <= 5; i++)
+        if (i <= Model.AverageRating)
         {
-            var buttonId = $"rating-{i}";
-            if (i <= Model.CurrentRating.RatingValue)
+            <img src="https://crockpotblob2005.blob.core.windows.net/images/green_star_checked.png" alt="Star" style="width: 3vw; height: auto;" />
+        }
+        else if (i - 0.5 <= Model.AverageRating)
+        {
+            <img src="https://crockpotblob2005.blob.core.windows.net/images/green_star_half_checked.png" alt="Star" style="width: 3vw; height: auto;" />
+        }
+        else
+        {
+            <img src="https://crockpotblob2005.blob.core.windows.net/images/green_star_unchecked.png" alt="Star" style="width: 3vw; height: auto;" />
+        }
+    }
+    <br><br>
+
+    <h4>Submit your rating</h4>
+    <div style="display: flex;align-items: center;">
+        @if (Model.CurrentRating != null)
+        {
+       
+            @for (int i = 1; i <= 5; i++)
             {
-                <button id="@buttonId" class="rating-button" style="border: none;background: none;"> <img src="https://crockpotblob2005.blob.core.windows.net/images/green_star_checked.png" alt="Star" style="width: 3vw; height: auto;" /></button>
+                var buttonId = $"rating-{i}";
+                if (i <= Model.CurrentRating.RatingValue)
+                {
+                    <button id="@buttonId" class="rating-button" style="border: none;background: none;"> <img src="https://crockpotblob2005.blob.core.windows.net/images/green_star_checked.png" alt="Star" class="star"  /></button>
+                }
+                else
+                {
+                    <button id="@buttonId" class="rating-button" style="border: none;background: none;"> <img src="https://crockpotblob2005.blob.core.windows.net/images/green_star_unchecked.png" alt="Star" class="star"  /></button>
+                }
             }
-            else
+            <form id="deleteRatingForm" asp-controller="Ratings" asp-action="Delete">
+                <input type="hidden" name="id" value="@Model.CurrentRating.Id" />
+                <button class="normal_button" type="submit">Remove Rating</button>
+            </form>
+        }
+        else
+        {
+            @for (int i = 1; i <= 5; i++)
             {
+                var buttonId = $"rating-{i}";
                 <button id="@buttonId" class="rating-button" style="border: none;background: none;"> <img src="https://crockpotblob2005.blob.core.windows.net/images/green_star_unchecked.png" alt="Star" style="width: 3vw; height: auto;" /></button>
             }
         }
-        <form id="deleteRatingForm" asp-controller="Ratings" asp-action="Delete">
-            <input type="hidden" name="id" value="@Model.CurrentRating.Id" />
-            <button class="normal_button" type="submit">Remove Rating</button>
-        </form>
-    }
-    else
-    {
-        @for (int i = 1; i <= 5; i++)
-        {
-            var buttonId = $"rating-{i}";
-            <button id="@buttonId" class="rating-button" style="border: none;background: none;"> <img src="https://crockpotblob2005.blob.core.windows.net/images/green_star_unchecked.png" alt="Star" style="width: 3vw; height: auto;" /></button>
-        }
-    }
 
-    <form id="ratingForm" asp-controller="Ratings" asp-action="Create" method="post">
+        <form id="ratingForm" asp-controller="Ratings" asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" name="RecipeId" value="@Model.Recipe.Id" />
+            <input type="hidden" id="ratingValue" name="ratingValue" value="0" />
+            <input type="hidden" name="AuthorId" value="@User.FindFirstValue(ClaimTypes.NameIdentifier)" />
+            <button class="normal_button" type="submit">Submit Rating</button>
+        </form>
+    </div>
+
+
+    <hr />
+
+    <div>
+        <h4>Comments</h4>
+        <ul>
+            @foreach (var comment in Model.Recipe.Comments)
+            {
+                var author = Model.AllUsers.FirstOrDefault(u => u.Id == comment.AuthorId);
+                var authorName = author != null ? author.UserName : "Unknown";
+                <li>
+                    @authorName : @comment.Content
+                    @if (User.Identity.IsAuthenticated && comment.AuthorId == User.FindFirst(ClaimTypes.NameIdentifier)?.Value)
+                    {
+                        <a asp-controller="Comments" asp-action="Edit" asp-route-id="@comment.Id">Edit</a>
+                        <a asp-controller="Comments" asp-action="Delete" asp-route-id="@comment.Id">Delete</a>
+                    }else if (User.IsInRole("Admin")){
+                        <a asp-controller="Comments" asp-action="Delete" asp-route-id="@comment.Id">Delete</a>
+                    }
+                </li>
+            }
+        </ul>
+    </div>
+
+    <form asp-controller="Comments" asp-action="Create" method="post">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <input type="hidden" name="RecipeId" value="@Model.Recipe.Id" />
-        <input type="hidden" id="ratingValue" name="ratingValue" value="0" />
+        <input name="Content" class="input-box" placeholder="Comment here">
         <input type="hidden" name="AuthorId" value="@User.FindFirstValue(ClaimTypes.NameIdentifier)" />
-        <button class="normal_button" type="submit">Submit Rating</button>
+        <button class="normal_button" type="submit">Submit Comment</button>
     </form>
-</div>
 
+    <hr />
 
-<hr />
+    <div>
+        <h4>Share Recipe</h4>
+        <form asp-controller="SharedRecipes" asp-action="Create" method="post">
+            <input type="hidden" name="RecipeId" value="@Model.Recipe.Id" />
 
-<div>
-    <h4>Comments</h4>
-    <ul>
-        @foreach (var comment in Model.Recipe.Comments)
-        {
-            var author = Model.AllUsers.FirstOrDefault(u => u.Id == comment.AuthorId);
-            var authorName = author != null ? author.UserName : "Unknown";
-            <li>
-                @authorName : @comment.Content
-                @if (User.Identity.IsAuthenticated && comment.AuthorId == User.FindFirst(ClaimTypes.NameIdentifier)?.Value)
+            <label for="ReceiverId">Select Receiver:</label>
+            <select name="ReceiverId" class="input-box" required>
+                <option value="">Select a User</option>
+                @if (Model.AllUsers != null)
                 {
-                    <a asp-controller="Comments" asp-action="Edit" asp-route-id="@comment.Id">Edit</a>
-                    <a asp-controller="Comments" asp-action="Delete" asp-route-id="@comment.Id">Delete</a>
-                }else if (User.IsInRole("Admin")){
-                    <a asp-controller="Comments" asp-action="Delete" asp-route-id="@comment.Id">Delete</a>
+                    foreach (var user in Model.AllUsers)
+                    {
+                        <option value="@user.Id">@user.UserName</option>
+                    }
                 }
-            </li>
-        }
-    </ul>
-</div>
+            </select>
 
-<form asp-controller="Comments" asp-action="Create" method="post">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <input type="hidden" name="RecipeId" value="@Model.Recipe.Id" />
-    <input name="Content" class="input-box" placeholder="Comment here">
-    <input type="hidden" name="AuthorId" value="@User.FindFirstValue(ClaimTypes.NameIdentifier)" />
-    <button class="normal_button" type="submit">Submit Comment</button>
-</form>
-
-<hr />
-
-<div>
-    <h4>Share Recipe</h4>
-    <form asp-controller="SharedRecipes" asp-action="Create" method="post">
-        <input type="hidden" name="RecipeId" value="@Model.Recipe.Id" />
-
-        <label for="ReceiverId">Select Receiver:</label>
-        <select name="ReceiverId" class="input-box" required>
-            <option value="">Select a User</option>
-            @if (Model.AllUsers != null)
-            {
-                foreach (var user in Model.AllUsers)
-                {
-                    <option value="@user.Id">@user.UserName</option>
-                }
-            }
-        </select>
-
-        <button class="normal_button" type="submit">Share Recipe</button>
-    </form>
-</div>
-
-
+            <button class="normal_button" type="submit">Share Recipe</button>
+        </form>
+    </div>
+</body>
 
 <script>
     var ratingButtons = document.getElementsByClassName("rating-button");

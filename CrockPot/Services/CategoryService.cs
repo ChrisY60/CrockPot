@@ -1,6 +1,7 @@
 ﻿using CrockPot.Data;
 using CrockPot.Models;
 using CrockPot.Services.IServices;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 
 namespace CrockPot.Services
@@ -24,10 +25,15 @@ namespace CrockPot.Services
             return await _context.Categories.FirstOrDefaultAsync(m => m.Id == id);
         }
 
-        public async Task<bool> CreateCategoryAsync(Category category)
+        public async Task<bool> CreateCategoryAsync(Category category, ModelStateDictionary modelState)
         {
             try
             {
+                if (!await IsCategoryNameUniqueAsync(category.Name))
+                {
+                    modelState.AddModelError("Name", "A category with this name already exists.");
+                    return false;
+                }
                 _context.Add(category);
                 await _context.SaveChangesAsync();
                 return true;

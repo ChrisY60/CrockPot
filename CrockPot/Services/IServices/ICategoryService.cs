@@ -1,4 +1,5 @@
 ﻿using CrockPot.Models;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace CrockPot.Services.IServices
 {
@@ -6,7 +7,7 @@ namespace CrockPot.Services.IServices
     {
         Task<List<Category>> GetCategoriesAsync();
         Task<Category> GetCategoryByIdAsync(int id);
-        Task<bool> CreateCategoryAsync(Category category);
+        Task<bool> CreateCategoryAsync(Category category, ModelStateDictionary modelState);
         Task<bool> UpdateCategoryAsync(Category category);
         Task<bool> DeleteCategoryAsync(int id);
         Task<bool> IsCategoryNameUniqueAsync(string name);

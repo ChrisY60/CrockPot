@@ -11,5 +11,8 @@
             Id = id;
             Name = name;
         }
+
+        public Category(){}
+
     }
 }

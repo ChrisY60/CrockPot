@@ -6,54 +6,62 @@
 @{
     ViewData["Title"] = "Recipes";
 }
+<body class="padding-body">
+    <h1>Recipes</h1>
 
-<h1>Recipes</h1>
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+    @foreach (var item in Model.Recipes)
+    {
+        string imageSrc = string.IsNullOrEmpty(item.ImageUrl)
+            ? "https://crockpotblob2005.blob.core.windows.net/images/unknown_food.png"
+            : item.ImageUrl;
 
-@foreach (var item in Model.Recipes)
-{
-    string imageSrc = string.IsNullOrEmpty(item.ImageUrl)
-        ? "https://crockpotblob2005.blob.core.windows.net/images/unknown_food.png"
-        : item.ImageUrl;
-
-    <button class="display_box" onclick="window.location.href = '@Url.Action("Details", "Recipes")/' + @item.Id;">
-        <div class="display_box_image">
-            <img src="@imageSrc" />
-        </div>
-
-        <div class="display_box_text">
-            <span>Name: </span>
-            @if(item.Name.Length > 10){
-                @Html.Raw(item.Name.Substring(0, 10) + "...");
-            }else{
-                @Html.Raw(item.Name);
-            }
-            <br>
-            <span>By: </span>
-            @{
-                string name = "Unknown";
-                if (Model.AuthorsNames.TryGetValue(item.AuthorId, out var authorName))
+        <button class="display_box" style="animation-delay: @(0.1 * @item.Id)s;" onclick="window.location.href = '@Url.Action("Details", "Recipes")/' + @item.Id;">
+            <div class="display_box_image">
+                <img src="@imageSrc" />
+            </div>
+            <div class="display_box_text">
+                <span>Name: </span>
+                @if (item.Name.Length > 10)
                 {
-                    name = authorName;
+                    @Html.Raw(item.Name.Substring(0, 10) + "...")
+                    ;
                 }
-            }
-            @if (authorName.Length > 10)
-            {
-                @Html.Raw(authorName.Substring(0, 10) + "...");
+                else
+                {
+                    @Html.Raw(item.Name)
+                    ;
+                }
+                <br>
+                <span>By: </span>
+                @{
+                    string name = "Unknown";
+                    if (Model.AuthorsNames.TryGetValue(item.AuthorId, out var authorName))
+                    {
+                        name = authorName;
+                    }
+                }
+                @if (authorName.Length > 10)
+                {
+                    @Html.Raw(authorName.Substring(0, 10) + "...")
+                    ;
 
-            }else{
-                @Html.Raw(authorName);
-            }
-            <br>
-            @if ((User.Identity.IsAuthenticated && User.FindFirstValue(ClaimTypes.NameIdentifier) == item.AuthorId) || User.IsInRole("Admin"))
-            {
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            }
-        </div>
-    </button>
-}
-
+                }
+                else
+                {
+                    @Html.Raw(authorName)
+                    ;
+                }
+                <br>
+                @if ((User.Identity.IsAuthenticated && User.FindFirstValue(ClaimTypes.NameIdentifier) == item.AuthorId) || User.IsInRole("Admin"))
+                {
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                }
+            </div>
+           </button>
+    }
+</body>
