@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using CrockPot.Services.IServices;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Diagnostics;
+using CrockPot.Services;
 
 namespace CrockPot.Controllers
 {
@@ -21,23 +22,17 @@ namespace CrockPot.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var ingredients = await _ingredientService.GetIngredientsAsync();
+            List<Ingredient>? ingredients = await _ingredientService.GetIngredientsAsync();
             return View(ingredients);
         }
         [HttpGet]
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || !_ingredientService.IngredientExists(id.Value))
-            {
-                return NotFound();
-            }
-
-            var ingredient = await _ingredientService.GetIngredientByIdAsync(id.Value);
+            Ingredient? ingredient = await _ingredientService.GetIngredientByIdAsync(id.Value);
             if (ingredient == null)
             {
                 return NotFound();
             }
-
             return View(ingredient);
         }
 
@@ -49,85 +44,44 @@ namespace CrockPot.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(int Id, string Name)
+        public async Task<IActionResult> Create(Ingredient ingredient)
         {
-            Ingredient ingredient = new Ingredient(Id, Name);
-
-            if (!await _ingredientService.IsIngredientNameUniqueAsync(ingredient.Name))
-            {
-                ModelState.AddModelError("Name", "An ingredient with that name already exists.");
-            }
-            if (ModelState.IsValid)
-            {
-                var result = await _ingredientService.CreateIngredientAsync(ingredient);
-                if (!result)
-                {
-                    ModelState.AddModelError(string.Empty, "Failed to create the ingredient. Please try again.");
-                    return View(ingredient);
-                }
+            if(await _ingredientService.CreateIngredientAsync(ingredient, ModelState)){
                 return RedirectToAction(nameof(Index));
             }
-
             return View(ingredient);
         }
 
         [HttpGet]
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
-            if (id == null || !_ingredientService.IngredientExists(id.Value))
-            {
-                return NotFound();
-            }
-
-            var ingredient = await _ingredientService.GetIngredientByIdAsync(id.Value);
+            Ingredient? ingredient = await _ingredientService.GetIngredientByIdAsync(id);
             if (ingredient == null)
             {
                 return NotFound();
             }
-
             return View(ingredient);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int Id, string Name)
+        public async Task<IActionResult> Edit(Ingredient ingredient)
         {
-            Ingredient ingredient = new(Id, Name);
-
-            if (!await _ingredientService.IsIngredientNameUniqueAsync(ingredient.Name))
+            if(await _ingredientService.UpdateIngredientAsync(ingredient, ModelState))
             {
-                ModelState.AddModelError("Name", "An ingredient with that name already exists.");
+                return RedirectToAction(nameof(Index));
             }
-
-            if (ModelState.IsValid)
-            {
-                var result = await _ingredientService.UpdateIngredientAsync(ingredient);
-                if (!result)
-                {
-                    ModelState.AddModelError(string.Empty, "Failed to update the ingredient. Please try again.");
-                    return View(ingredient);
-                }
-                
-                return RedirectToAction("Index");
-            }
-
             return View(ingredient);
         }
 
         [HttpGet]
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (id == null || !_ingredientService.IngredientExists(id.Value))
-            {
-                return NotFound();
-            }
-
-            var ingredient = await _ingredientService.GetIngredientByIdAsync(id.Value);
+            Ingredient? ingredient = await _ingredientService.GetIngredientByIdAsync(id);
             if (ingredient == null)
             {
                 return NotFound();
             }
-
             return View(ingredient);
         }
 
@@ -135,13 +89,7 @@ namespace CrockPot.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (!_ingredientService.IngredientExists(id))
-            {
-                return NotFound();
-            }
-
-            var result = await _ingredientService.DeleteIngredientAsync(id);
-            if (!result)
+            if (!await _ingredientService.DeleteIngredientAsync(id))
             {
                 return BadRequest("Failed to delete the ingredient. Please try again.");
             }

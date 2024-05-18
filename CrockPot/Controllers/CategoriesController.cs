@@ -2,6 +2,7 @@
 using CrockPot.Models;
 using Microsoft.AspNetCore.Authorization;
 using CrockPot.Services.IServices;
+using System.Diagnostics;
 
 namespace CrockPot.Controllers
 {
@@ -25,7 +26,7 @@ namespace CrockPot.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(int id)
         {
-            var category = await _categoryService.GetCategoryByIdAsync(id);
+            Category? category = await _categoryService.GetCategoryByIdAsync(id);
             if (category == null)
             {
                 return NotFound();
@@ -47,15 +48,13 @@ namespace CrockPot.Controllers
             {
                 return RedirectToAction(nameof(Index));
             }
-
-            ModelState.AddModelError(string.Empty, "Failed to create the category. Please try again.");
             return View(category);
         }
 
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var category = await _categoryService.GetCategoryByIdAsync(id);
+            Category? category = await _categoryService.GetCategoryByIdAsync(id);
             if (category == null)
             {
                 return NotFound();
@@ -63,23 +62,25 @@ namespace CrockPot.Controllers
             return View(category);
         }
 
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Category category)
         {
-            if (await _categoryService.UpdateCategoryAsync(category, ModelState))
+            if (ModelState.IsValid)
             {
-                return RedirectToAction(nameof(Index));
+                if (await _categoryService.UpdateCategoryAsync(category, ModelState))
+                {
+                    return RedirectToAction(nameof(Index));
+                }
             }
-
-            ModelState.AddModelError(string.Empty, "Failed to update the category. Please try again.");
             return View(category);
         }
 
         [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
-            var category = await _categoryService.GetCategoryByIdAsync(id);
+            Category? category = await _categoryService.GetCategoryByIdAsync(id);
             if (category == null)
             {
                 return NotFound();

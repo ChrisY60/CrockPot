@@ -1,6 +1,7 @@
 ﻿using CrockPot.Data;
 using CrockPot.Models;
 using CrockPot.Services.IServices;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 
 namespace CrockPot.Services
@@ -24,30 +25,42 @@ namespace CrockPot.Services
             return await _context.Ingredients.FirstOrDefaultAsync(m => m.Id == id);
         }
 
-        public async Task<bool> CreateIngredientAsync(Ingredient ingredient)
+        public async Task<bool> CreateIngredientAsync(Ingredient ingredient, ModelStateDictionary modelState)
         {
             try
             {
+                if (!await IsIngredientNameUniqueAsync(ingredient.Name))
+                {
+                    modelState.AddModelError("Name", "An ingredient with this name already exists.");
+                    return false;
+                }
                 _context.Add(ingredient);
                 await _context.SaveChangesAsync();
                 return true;
             }
             catch (DbUpdateException)
             {
+                modelState.AddModelError(string.Empty, "Failed to create the ingredient. Please try again.");
                 return false;
             }
         }
 
-        public async Task<bool> UpdateIngredientAsync(Ingredient ingredient)
+        public async Task<bool> UpdateIngredientAsync(Ingredient ingredient, ModelStateDictionary modelState)
         {
             try
             {
+                if (!await IsIngredientNameUniqueAsync(ingredient.Name))
+                {
+                    modelState.AddModelError("Name", "An ingredient with this name already exists.");
+                    return false;
+                }
                 _context.Update(ingredient);
                 await _context.SaveChangesAsync();
                 return true;
             }
             catch (DbUpdateException)
             {
+                modelState.AddModelError(string.Empty, "Failed to create the ingredient. Please try again.");
                 return false;
             }
         }
@@ -56,7 +69,7 @@ namespace CrockPot.Services
         {
             try
             {
-                var ingredient = await _context.Ingredients.FindAsync(id);
+                Ingredient? ingredient = await _context.Ingredients.FindAsync(id);
                 if (ingredient != null)
                 {
                     _context.Ingredients.Remove(ingredient);

@@ -40,6 +40,7 @@ namespace CrockPot.Services
             }
             catch (DbUpdateException)
             {
+                modelState.AddModelError(string.Empty, "Failed to create the category. Please try again.");
                 return false;
             }
         }
@@ -69,7 +70,7 @@ namespace CrockPot.Services
         {
             try
             {
-                var category = await _context.Categories.FindAsync(id);
+                Category? category = await _context.Categories.FindAsync(id);
                 if (category != null)
                 {
                     _context.Categories.Remove(category);

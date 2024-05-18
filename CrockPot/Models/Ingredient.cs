@@ -2,7 +2,7 @@
 {
     public class Ingredient
     {
-        public int Id { get; private set; }
+        public int Id { get; set; }
         public string Name { get; set; }
         public ICollection<Recipe>? Recipes { get; set; }
 
@@ -11,5 +11,6 @@
             Id = id;
             Name = name;
         }
+        public Ingredient() { }
     }
 }

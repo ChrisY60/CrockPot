@@ -1,4 +1,5 @@
 ﻿using CrockPot.Models;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -8,8 +9,8 @@ namespace CrockPot.Services.IServices
     {
         Task<List<Ingredient>> GetIngredientsAsync();
         Task<Ingredient> GetIngredientByIdAsync(int id);
-        Task<bool> CreateIngredientAsync(Ingredient ingredient);
-        Task<bool> UpdateIngredientAsync(Ingredient ingredient);
+        Task<bool> CreateIngredientAsync(Ingredient ingredient, ModelStateDictionary modelState);
+        Task<bool> UpdateIngredientAsync(Ingredient ingredient, ModelStateDictionary modelState);
         Task<bool> DeleteIngredientAsync(int id);
 
         Task<bool> IsIngredientNameUniqueAsync(string name);
