@@ -13,6 +13,7 @@ namespace CrockPot.Controllers
         public CategoriesController(ICategoryService categoryService)
         {
             _categoryService = categoryService;
+
         }
 
         [HttpGet]
@@ -22,19 +23,13 @@ namespace CrockPot.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var category = await _categoryService.GetCategoryByIdAsync(id.Value);
+            var category = await _categoryService.GetCategoryByIdAsync(id);
             if (category == null)
             {
                 return NotFound();
             }
-
             return View(category);
         }
 
@@ -58,19 +53,13 @@ namespace CrockPot.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var category = await _categoryService.GetCategoryByIdAsync(id.Value);
+            var category = await _categoryService.GetCategoryByIdAsync(id);
             if (category == null)
             {
                 return NotFound();
             }
-
             return View(category);
         }
 
@@ -78,18 +67,7 @@ namespace CrockPot.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Category category)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(category);
-            }
-
-            if (!await _categoryService.IsCategoryNameUniqueAsync(category.Name))
-            {
-                ModelState.AddModelError("Name", "A category with this name already exists.");
-                return View(category);
-            }
-
-            if (await _categoryService.UpdateCategoryAsync(category))
+            if (await _categoryService.UpdateCategoryAsync(category, ModelState))
             {
                 return RedirectToAction(nameof(Index));
             }
@@ -99,19 +77,13 @@ namespace CrockPot.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var category = await _categoryService.GetCategoryByIdAsync(id.Value);
+            var category = await _categoryService.GetCategoryByIdAsync(id);
             if (category == null)
             {
                 return NotFound();
             }
-
             return View(category);
         }
 
