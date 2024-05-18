@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using CrockPot.ViewModels;
 using System.Diagnostics;
 using CrockPot.ViewModels.Recipes;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace CrockPot.Controllers
 {
@@ -52,6 +53,13 @@ namespace CrockPot.Controllers
         [HttpGet]
         public async Task<IActionResult> Details(int? id)
         {
+            if (TempData["MSErrorsFromCommentsRedirect"] != null)
+            {
+                ModelState.AddModelError(string.Empty, (string)TempData["MSErrorsFromCommentsRedirect"]);
+            }
+
+            Debug.WriteLine("V kontrolera na recepti:");
+            Debug.WriteLine(ModelState.IsValid);
             if (id == null || !_recipeService.RecipeExists(id.Value))
             {
                 return NotFound();
@@ -291,7 +299,8 @@ namespace CrockPot.Controllers
         }
 
         private async Task<Dictionary<string, string>> GetAuthorsNames(List<Recipe>Recipes){
-            var authorsNames = new Dictionary<string, string>();
+           
+            Dictionary<string, string> authorsNames = new Dictionary<string, string>();
 
             foreach(Recipe r in Recipes){
                 var authorUser = await _userManager.FindByIdAsync(r.AuthorId);

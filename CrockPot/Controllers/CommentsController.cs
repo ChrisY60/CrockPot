@@ -1,4 +1,5 @@
 ﻿using CrockPot.Models;
+using CrockPot.Services;
 using CrockPot.Services.IServices;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -22,16 +23,8 @@ namespace CrockPot.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Comment comment)
         {
-            comment.AuthorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (ModelState.IsValid)
-            {
-                var result = await _commentService.CreateCommentAsync(comment);
-                if (!result)
-                {
-                    ModelState.AddModelError(string.Empty, "Failed to create the comment. Please try again.");
-                }
-            }
+            await _commentService.CreateCommentAsync(comment, User.FindFirstValue(ClaimTypes.NameIdentifier), ModelState);
+            TempData["MSErrorsFromCommentsRedirect"] = string.Join("\n ", ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage));
 
             return RedirectToAction("Details", "Recipes", new { id = comment.RecipeId });
         }
@@ -39,7 +32,7 @@ namespace CrockPot.Controllers
         [HttpGet]
         public async Task<IActionResult> Edit(int id)
         {
-            var comment = await _commentService.GetCommentByIdAsync(id);
+            Comment? comment = await _commentService.GetCommentByIdAsync(id);
             if (comment == null)
             {
                 return NotFound();
@@ -54,47 +47,19 @@ namespace CrockPot.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, Comment comment)
+        public async Task<IActionResult> Edit(Comment comment)
         {
-            if (ModelState.IsValid)
-            {
-                var existingComment = await _commentService.GetCommentByIdAsync(id);
-                
-                if (existingComment == null)
-                {
-                    return NotFound();
-                }
-
-                if (User.FindFirstValue(ClaimTypes.NameIdentifier) != existingComment.AuthorId)
-                {
-                    return StatusCode(403);
-                }
-
-                existingComment.Content = comment.Content;
-
-                var result = await _commentService.UpdateCommentAsync(existingComment);
-                if (!result)
-                {
-                    ModelState.AddModelError(string.Empty, "Failed to update the comment. Please try again.");
-                    return View(existingComment);
-                }
-
-                return RedirectToAction("Details", "Recipes", new { id = existingComment.RecipeId });
+            if (await _commentService.UpdateCommentAsync(comment.Id, comment.Content, User.FindFirstValue(ClaimTypes.NameIdentifier), ModelState)){
+                    return RedirectToAction("Details", "Recipes", new { id = comment.RecipeId });
             }
-
             return View(comment);
         }
 
 
         [HttpGet]
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (id == null || !_commentService.CommentExists(id.Value))
-            {
-                return NotFound();
-            }
-
-            var comment = await _commentService.GetCommentByIdAsync(id.Value);
+            Comment? comment = await _commentService.GetCommentByIdAsync(id);
             if (comment == null)
             {
                 return NotFound();
@@ -103,7 +68,6 @@ namespace CrockPot.Controllers
             {
                 return StatusCode(403);
             }
-
             return View(comment);
         }
 
@@ -111,22 +75,12 @@ namespace CrockPot.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var comment = await _commentService.GetCommentByIdAsync(id);
-            if (comment == null)
+            Comment deltedComment = await _commentService.GetCommentByIdAsync(id);
+            if (!await _commentService.DeleteCommentAsync(id, User.FindFirstValue(ClaimTypes.NameIdentifier), User.IsInRole("Admin"), ModelState))
             {
-                return NotFound();
+                return BadRequest("Failed to delete the comment. Please try again.");
             }
-
-            var recipeId = comment.RecipeId;
-
-            var result = await _commentService.DeleteCommentAsync(id);
-            if (!result)
-            {
-                ModelState.AddModelError(string.Empty, "Failed to delete the comment. Please try again.");
-                return View(await _commentService.GetCommentByIdAsync(id)); 
-            }
-
-            return RedirectToAction("Details", "Recipes", new { id = recipeId });
+            return RedirectToAction("Details", "Recipes", new { id = deltedComment.RecipeId });
         }
     }
 }

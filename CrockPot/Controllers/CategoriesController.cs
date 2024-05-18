@@ -67,12 +67,8 @@ namespace CrockPot.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Category category)
         {
-            if (ModelState.IsValid)
-            {
-                if (await _categoryService.UpdateCategoryAsync(category, ModelState))
-                {
-                    return RedirectToAction(nameof(Index));
-                }
+            if (await _categoryService.UpdateCategoryAsync(category, ModelState)){
+                return RedirectToAction(nameof(Index));
             }
             return View(category);
         }
