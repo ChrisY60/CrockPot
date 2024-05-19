@@ -26,10 +26,10 @@ namespace CrockPot.Services
                  
                 if (await containerClient.ExistsAsync())
                 {
-                    var blobName = Guid.NewGuid().ToString(); 
-                    var blockBlob = containerClient.GetBlobClient(blobName);
+                    string blobName = Guid.NewGuid().ToString(); 
+                    BlobClient blockBlob = containerClient.GetBlobClient(blobName);
 
-                    using (var stream = file.OpenReadStream())
+                    using (Stream? stream = file.OpenReadStream())
                     {
                         await blockBlob.UploadAsync(stream, true);
                         return blockBlob.Uri.ToString();
