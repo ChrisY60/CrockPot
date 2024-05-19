@@ -21,17 +21,7 @@ namespace CrockPot.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Submit(Rating rating)
         {
-            rating.AuthorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            if (ModelState.IsValid)
-            {
-                var result = await _ratingService.SubmitRatingAsync(rating);
-                if (!result)
-                {
-                    ModelState.AddModelError(string.Empty, "Failed to create the rating. Please try again.");
-                }
-            }
-
+            await _ratingService.SubmitRatingAsync(rating, User.FindFirstValue(ClaimTypes.NameIdentifier), ModelState);
             return RedirectToAction("Details", "Recipes", new { id = rating.RecipeId });
         }
 
@@ -40,27 +30,17 @@ namespace CrockPot.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            if(id == null)
-            {
-                return NotFound();
-            }
-            var rating = await _ratingService.GetRatingByIdAsync(id);
-
+            Rating? rating = await _ratingService.GetRatingByIdAsync(id);
             if (rating == null)
             {
                 return NotFound();
             }
-
             if (User.FindFirstValue(ClaimTypes.NameIdentifier) != rating.AuthorId)
             {
                 return StatusCode(403);
             }
-            var result = await _ratingService.DeleteRatingAsync(id);
-            if (!result)
-            {
-                return Problem("Failed to delete the rating.");
-            }
 
+            await _ratingService.DeleteRatingAsync(id);
             return RedirectToAction("Details", "Recipes", new { id = rating.RecipeId });
         }
 

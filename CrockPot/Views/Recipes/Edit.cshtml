@@ -31,13 +31,17 @@
             <br>
             <input class="input-box" type="text" placeholder="Search..." id="ingredientsSearch">
             <div class="scrollable-container">
-                @foreach (var ingredient in Model.AllIngredients)
+                @if(Model.AllIngredients != null)
                 {
-                    <div>
-                        <input type="checkbox" name="SelectedIngredients" value="@ingredient.Id" @(Model.SelectedIngredients != null && Model.SelectedIngredients.Contains(ingredient.Id) ? "checked" : "")>
-                        <label>@ingredient.Name</label>
-                    </div>
+                    @foreach (var ingredient in Model.AllIngredients)
+                    {
+                        <div>
+                            <input type="checkbox" name="SelectedIngredients" value="@ingredient.Id" @(Model.SelectedIngredients != null && Model.SelectedIngredients.Contains(ingredient.Id) ? "checked" : "")>
+                            <label>@ingredient.Name</label>
+                        </div>
+                    }
                 }
+                
             </div>
         </div>
         <div class="form-group">
@@ -45,13 +49,17 @@
             <br />
             <input class="input-box" type="text" placeholder="Search..." id="categoriesSearch">
             <div class="scrollable-container">
-                @foreach (var category in Model.AllCategories)
+                @if(Model.AllCategories != null)
                 {
-                    <div>
-                        <input type="checkbox" name="SelectedCategories" value="@category.Id" @(Model.SelectedCategories != null && Model.SelectedCategories.Contains(category.Id) ? "checked" : "")>
-                        <label>@category.Name</label>
-                    </div>
+                    @foreach (var category in Model.AllCategories)
+                    {
+                        <div>
+                            <input type="checkbox" name="SelectedCategories" value="@category.Id" @(Model.SelectedCategories != null && Model.SelectedCategories.Contains(category.Id) ? "checked" : "")>
+                            <label>@category.Name</label>
+                        </div>
+                    }
                 }
+                
             </div>
         </div>
         <br />

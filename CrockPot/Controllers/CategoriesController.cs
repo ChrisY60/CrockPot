@@ -2,6 +2,7 @@
 using CrockPot.Models;
 using Microsoft.AspNetCore.Authorization;
 using CrockPot.Services.IServices;
+using System.Diagnostics;
 
 namespace CrockPot.Controllers
 {
@@ -13,6 +14,7 @@ namespace CrockPot.Controllers
         public CategoriesController(ICategoryService categoryService)
         {
             _categoryService = categoryService;
+
         }
 
         [HttpGet]
@@ -22,19 +24,13 @@ namespace CrockPot.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var category = await _categoryService.GetCategoryByIdAsync(id.Value);
+            Category? category = await _categoryService.GetCategoryByIdAsync(id);
             if (category == null)
             {
                 return NotFound();
             }
-
             return View(category);
         }
 
@@ -52,66 +48,39 @@ namespace CrockPot.Controllers
             {
                 return RedirectToAction(nameof(Index));
             }
-
-            ModelState.AddModelError(string.Empty, "Failed to create the category. Please try again.");
             return View(category);
         }
 
         [HttpGet]
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var category = await _categoryService.GetCategoryByIdAsync(id.Value);
+            Category? category = await _categoryService.GetCategoryByIdAsync(id);
             if (category == null)
             {
                 return NotFound();
             }
-
             return View(category);
         }
 
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Category category)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(category);
-            }
-
-            if (!await _categoryService.IsCategoryNameUniqueAsync(category.Name))
-            {
-                ModelState.AddModelError("Name", "A category with this name already exists.");
-                return View(category);
-            }
-
-            if (await _categoryService.UpdateCategoryAsync(category))
-            {
+            if (await _categoryService.UpdateCategoryAsync(category, ModelState)){
                 return RedirectToAction(nameof(Index));
             }
-
-            ModelState.AddModelError(string.Empty, "Failed to update the category. Please try again.");
             return View(category);
         }
 
         [HttpGet]
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var category = await _categoryService.GetCategoryByIdAsync(id.Value);
+            Category? category = await _categoryService.GetCategoryByIdAsync(id);
             if (category == null)
             {
                 return NotFound();
             }
-
             return View(category);
         }
 

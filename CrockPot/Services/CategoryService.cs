@@ -40,15 +40,22 @@ namespace CrockPot.Services
             }
             catch (DbUpdateException)
             {
+                modelState.AddModelError(string.Empty, "Failed to create the category. Please try again.");
                 return false;
             }
         }
 
 
-        public async Task<bool> UpdateCategoryAsync(Category category)
+        public async Task<bool> UpdateCategoryAsync(Category category, ModelStateDictionary modelState)
         {
+
             try
             {
+                if(!await IsCategoryNameUniqueAsync(category.Name))
+                {
+                    modelState.AddModelError("Name", "A category with this name already exists.");
+                    return false;
+                }
                 _context.Update(category);
                 await _context.SaveChangesAsync();
                 return true;
@@ -63,7 +70,7 @@ namespace CrockPot.Services
         {
             try
             {
-                var category = await _context.Categories.FindAsync(id);
+                Category? category = await _context.Categories.FindAsync(id);
                 if (category != null)
                 {
                     _context.Categories.Remove(category);

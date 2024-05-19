@@ -7,22 +7,29 @@ namespace CrockPot.Services
 {
     public class BlobService : IBlobService
     {
+        private readonly BlobServiceClient _blobServiceClient;
+        private readonly string _containerName;
+
+        public BlobService(IConfiguration configuration)
+        {
+            var blobServiceUri = new Uri(configuration["BlobStorage:Uri"]);
+            DefaultAzureCredential blobCredential = new DefaultAzureCredential();
+            _blobServiceClient = new BlobServiceClient(blobServiceUri, blobCredential);
+            _containerName = configuration["BlobStorage:ContainerName"];
+        }
+
         public async Task<string> UploadImageAsync(IFormFile file)
         {
             try
             {
-                var blobServiceClient = new BlobServiceClient(
-                    new Uri("https://crockpotblob2005.blob.core.windows.net"),
-                    new DefaultAzureCredential());
-                    
-                BlobContainerClient containerClient = blobServiceClient.GetBlobContainerClient("images");
+                BlobContainerClient containerClient = _blobServiceClient.GetBlobContainerClient(_containerName);
                  
                 if (await containerClient.ExistsAsync())
                 {
-                    var blobName = Guid.NewGuid().ToString(); 
-                    var blockBlob = containerClient.GetBlobClient(blobName);
+                    string blobName = Guid.NewGuid().ToString(); 
+                    BlobClient blockBlob = containerClient.GetBlobClient(blobName);
 
-                    using (var stream = file.OpenReadStream())
+                    using (Stream? stream = file.OpenReadStream())
                     {
                         await blockBlob.UploadAsync(stream, true);
                         return blockBlob.Uri.ToString();
