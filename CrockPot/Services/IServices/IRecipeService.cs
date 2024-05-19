@@ -13,6 +13,9 @@ namespace CrockPot.Services.IServices
         Task<bool> UpdateRecipeAsync(EditRecipeViewModel viewModel, string currentUser, ModelStateDictionary modelState);
         Task<bool> DeleteRecipeAsync(int id, ModelStateDictionary modelState);
         bool RecipeExists(int id);
+        Task<Dictionary<string, string>> GetAuthorsNames(List<Recipe> Recipes);
         Task<List<Recipe>> GetAllRecipesByFilterAsync(string name, int[] selectedCategories, int[] selectedIngredients);
+        Task<DetailsRecipeViewModel> GetDetailsViewModelByRecipeId(int id, string currentUser);
+        Task<EditRecipeViewModel> GetEditViewModelByRecipeId(int recipeId);
     }
 }

@@ -83,7 +83,7 @@ namespace CrockPot.Services
                 return false;
             }
             catch (DbUpdateException)
-            { 
+            {   
                 return false;
             }
         }

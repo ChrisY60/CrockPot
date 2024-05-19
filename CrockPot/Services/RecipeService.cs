@@ -2,9 +2,10 @@
 using CrockPot.Models;
 using CrockPot.Services.IServices;
 using CrockPot.ViewModels.Recipes;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
+using System.Security.Claims;
 
 namespace CrockPot.Services
 {
@@ -12,11 +13,15 @@ namespace CrockPot.Services
     {
         private readonly ApplicationDbContext _context;
         private readonly IBlobService _blobService;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly IRatingService _ratingService;
 
-        public RecipeService(ApplicationDbContext context, IBlobService blobService)
+        public RecipeService(ApplicationDbContext context, IBlobService blobService, UserManager<IdentityUser> userManager, IRatingService ratingService)
         {
             _context = context;
             _blobService = blobService;
+            _userManager = userManager;
+            _ratingService = ratingService;
         }
 
         public async Task<List<Recipe>> GetRecipesAsync()
@@ -50,7 +55,7 @@ namespace CrockPot.Services
 
                 if (allowedExtensions.Contains(fileExtension))
                 {
-                    var imageUrl = await _blobService.UploadImageAsync(viewModel.ImageFile);
+                    string? imageUrl = await _blobService.UploadImageAsync(viewModel.ImageFile);
                     recipe.ImageUrl = imageUrl;
                 }
                 else
@@ -158,6 +163,54 @@ namespace CrockPot.Services
 
             return await query.ToListAsync();
 
+        }
+
+        public async Task<Dictionary<string, string>> GetAuthorsNames(List<Recipe> Recipes)
+        {
+            Dictionary<string, string> authorsNames = new Dictionary<string, string>();
+            foreach (Recipe r in Recipes)
+            {
+                IdentityUser? authorUser = await _userManager.FindByIdAsync(r.AuthorId);
+                string? authorName = authorUser?.UserName;
+                if (authorName != null) { authorsNames[r.AuthorId] = authorName; }
+            }
+            return authorsNames;
+        }
+
+        public async Task<DetailsRecipeViewModel> GetDetailsViewModelByRecipeId(int recipeId,string currentUser){
+            Recipe? recipe = await GetRecipeByIdAsync(recipeId);
+            IdentityUser? author = await _userManager.FindByIdAsync(recipe.AuthorId);
+            string? authorName = author != null ? author.UserName : "Unknown";
+            double averageRating = await _ratingService.GetAverageRatingByRecipeIdAsync(recipe.Id);
+            List<IdentityUser>? allUsers = await _userManager.Users.ToListAsync();
+            Rating? currentRating = await _ratingService.GetUserRatingOnRecipeAsync(currentUser, recipe.Id);
+
+            DetailsRecipeViewModel viewModel = new DetailsRecipeViewModel
+            {
+                Recipe = recipe,
+                AuthorName = authorName,
+                AverageRating = averageRating,
+                AllUsers = allUsers,
+                CurrentRating = currentRating
+            };
+            return viewModel;
+
+        }
+
+        public async Task<EditRecipeViewModel> GetEditViewModelByRecipeId(int recipeId)
+        {
+            Recipe? recipe = await GetRecipeByIdAsync(recipeId);
+            EditRecipeViewModel viewModel = new EditRecipeViewModel
+            {
+                Id = recipe.Id,
+                Name = recipe.Name,
+                Description = recipe.Description,
+                SelectedCategories = recipe.Categories.Select(c => c.Id).ToArray(),
+                SelectedIngredients = recipe.Ingredients.Select(i => i.Id).ToArray(),
+                AllCategories = await _context.Categories.ToListAsync(),
+                AllIngredients = await _context.Ingredients.ToListAsync()
+            };
+            return viewModel;
         }
     }
 }

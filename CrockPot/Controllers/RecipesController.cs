@@ -36,12 +36,10 @@ namespace CrockPot.Controllers
         public async Task<IActionResult> Index()
         {
             List<Recipe>? recipes = await _recipeService.GetRecipesAsync();
-            Dictionary<string, string>? authorsNames = await GetAuthorsNames(recipes);
-
             IndexRecipeViewModel viewModel = new IndexRecipeViewModel
             {
                 Recipes = recipes,
-                AuthorsNames = authorsNames
+                AuthorsNames = await _recipeService.GetAuthorsNames(recipes)
             };
 
             return View(viewModel);
@@ -54,23 +52,7 @@ namespace CrockPot.Controllers
             {
                 ModelState.AddModelError(string.Empty, (string)TempData["MSErrorsFromCommentsRedirect"]);
             }
-
-            Recipe? recipe = await _recipeService.GetRecipeByIdAsync(id);
-            IdentityUser? author = await _userManager.FindByIdAsync(recipe.AuthorId);
-            string? authorName = author != null ? author.UserName : "Unknown";
-            double averageRating = await _ratingService.GetAverageRatingByRecipeIdAsync(recipe.Id);
-            List<IdentityUser>? allUsers = await _userManager.Users.ToListAsync();
-            Rating? currentRating = await _ratingService.GetUserRatingOnRecipeAsync(User.FindFirstValue(ClaimTypes.NameIdentifier), recipe.Id);
-
-            DetailsRecipeViewModel viewModel = new DetailsRecipeViewModel
-            {
-                Recipe = recipe,
-                AuthorName = authorName,
-                AverageRating = averageRating,
-                AllUsers = allUsers,
-                CurrentRating = currentRating
-            };
-
+            DetailsRecipeViewModel viewModel = await _recipeService.GetDetailsViewModelByRecipeId(id, User.FindFirstValue(ClaimTypes.NameIdentifier));
             return View(viewModel);
         }
 
@@ -107,25 +89,12 @@ namespace CrockPot.Controllers
                 return NotFound();
             }
             Recipe? recipe = await _recipeService.GetRecipeByIdAsync(id);
-            List<Category>? categories = await _categoryService.GetCategoriesAsync();
-            List<Ingredient>? ingredients = await _ingredientService.GetIngredientsAsync();
-
             if (User.FindFirstValue(ClaimTypes.NameIdentifier) != recipe.AuthorId)
             {
                 return StatusCode(403);
             }
 
-            EditRecipeViewModel viewModel = new EditRecipeViewModel
-            {
-                Id = recipe.Id,
-                Name = recipe.Name,
-                Description = recipe.Description,
-                SelectedCategories = recipe.Categories.Select(c => c.Id).ToArray(),
-                SelectedIngredients = recipe.Ingredients.Select(i => i.Id).ToArray(),
-                AllCategories = categories,
-                AllIngredients = ingredients
-            };
-
+            EditRecipeViewModel viewModel = await _recipeService.GetEditViewModelByRecipeId(id);
             return View(viewModel);
         }
 
@@ -189,7 +158,7 @@ namespace CrockPot.Controllers
             IndexRecipeViewModel viewModel = new IndexRecipeViewModel
             {
                 Recipes = recipes,
-                AuthorsNames = await GetAuthorsNames(recipes)
+                AuthorsNames = await _recipeService.GetAuthorsNames(recipes)
             };
             return View("Index", viewModel);
         }
@@ -201,14 +170,6 @@ namespace CrockPot.Controllers
             return View("HighestRatedRecipes", highestRatedRecipes);
         }
 
-        private async Task<Dictionary<string, string>> GetAuthorsNames(List<Recipe>Recipes){
-            Dictionary<string, string> authorsNames = new Dictionary<string, string>();
-            foreach(Recipe r in Recipes){
-                IdentityUser? authorUser = await _userManager.FindByIdAsync(r.AuthorId);
-                string? authorName = authorUser?.UserName;
-                if(authorName != null) {authorsNames[r.AuthorId] = authorName;}
-            }
-            return authorsNames;
-        }
+        
     }
 }
