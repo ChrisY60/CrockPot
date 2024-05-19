@@ -15,18 +15,16 @@ namespace CrockPot.Controllers
         private readonly IRecipeService _recipeService;
         private readonly ICategoryService _categoryService;
         private readonly IIngredientService _ingredientService;
-        private readonly ICommentService _commentService;
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IRatingService _ratingService;
         private readonly IBlobService _blobService;
 
 
-        public RecipesController(IRecipeService recipeService, ICategoryService categoryService, IIngredientService ingredientService, ICommentService commentService, UserManager<IdentityUser> userManager, IRatingService ratingService, IBlobService blobService)
+        public RecipesController(IRecipeService recipeService, ICategoryService categoryService, IIngredientService ingredientService, UserManager<IdentityUser> userManager, IRatingService ratingService, IBlobService blobService)
         {
             _recipeService = recipeService;
             _categoryService = categoryService;
             _ingredientService = ingredientService;
-            _commentService = commentService;
             _ratingService = ratingService;
             _userManager = userManager;
             _blobService = blobService;
