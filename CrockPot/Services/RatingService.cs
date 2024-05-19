@@ -1,6 +1,7 @@
 ﻿using CrockPot.Data;
 using CrockPot.Models;
 using CrockPot.Services.IServices;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 
 namespace CrockPot.Services
@@ -45,11 +46,11 @@ namespace CrockPot.Services
 
             return 0;
         }
-        public async Task<bool> SubmitRatingAsync(Rating rating)
+        public async Task<bool> SubmitRatingAsync(Rating rating, string currentUser, ModelStateDictionary modelState)
         {
             try
             {
-                var existingRating = await GetUserRatingOnRecipeAsync(rating.AuthorId, rating.RecipeId);
+                Rating? existingRating = await GetUserRatingOnRecipeAsync(currentUser, rating.RecipeId);
 
                 if (existingRating != null)
                 {
@@ -63,6 +64,7 @@ namespace CrockPot.Services
             }
             catch (DbUpdateException)
             {
+                modelState.AddModelError(string.Empty, "Failed to create the rating. Please try again.");
                 return false;
             }
         }
@@ -81,7 +83,7 @@ namespace CrockPot.Services
                 return false;
             }
             catch (DbUpdateException)
-            {
+            { 
                 return false;
             }
         }
