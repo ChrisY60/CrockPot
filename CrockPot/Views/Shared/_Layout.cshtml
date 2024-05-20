@@ -36,6 +36,9 @@
                             <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Recipes" asp-action="HighestRatedRecipes">Top Recipes</a>
                             </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Ratings" asp-action="GetRecommendedRecipes">For You</a>
+                        </li>
                             @if (User.IsInRole("Admin"))
                             {
                                 <li>

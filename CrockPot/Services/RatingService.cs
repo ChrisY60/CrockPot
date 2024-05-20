@@ -96,19 +96,159 @@ namespace CrockPot.Services
 
         public async Task<List<(Recipe recipe, float averageRating)>> GetHighestRatedRecipesAsync()
         {
-            var recipes = await _context.Recipes.ToListAsync();
-            var topRatedRecipes = new List<(Recipe, float)>();
+            List<Recipe>? recipes = await _context.Recipes.ToListAsync();
+            List<(Recipe, float)>? topRatedRecipes = new List<(Recipe, float)>();
 
             foreach (var recipe in recipes)
             {
-                var averageRating = await GetAverageRatingByRecipeIdAsync(recipe.Id);
+                float averageRating = await GetAverageRatingByRecipeIdAsync(recipe.Id);
                 topRatedRecipes.Add((recipe, averageRating));
             }
 
-            topRatedRecipes.Sort((x, y) => y.Item2.CompareTo(x.Item2));
+            topRatedRecipes.Sort(((Recipe, float) x, (Recipe, float) y) => y.Item2.CompareTo(x.Item2));
 
             return topRatedRecipes.Take(10).ToList();
         }
+
+
+        private async Task<Dictionary<int, float>> GetAverageRatingsForCategoriesAsync(string userId)
+        {
+            Dictionary<int, float> categoryRatings = new Dictionary<int, float>();
+
+            List<Rating>? userRatings = await _context.Ratings
+                                            .Where(r => r.AuthorId == userId)
+                                            .Include(r => r.Recipe)
+                                            .ThenInclude(r => r.Categories)
+                                            .ToListAsync();
+
+            Dictionary<int, (float sum, int count)> categoryRatingSums = new Dictionary<int, (float sum, int count)>();
+
+            foreach (Rating rating in userRatings)
+            {
+                foreach (Category category in rating.Recipe.Categories)
+                {
+                    if (!categoryRatingSums.ContainsKey(category.Id))
+                    {
+                        categoryRatingSums[category.Id] = (0, 0);
+                    }
+
+                    categoryRatingSums[category.Id] = (
+                        categoryRatingSums[category.Id].sum + rating.RatingValue,
+                        categoryRatingSums[category.Id].count + 1
+                    );
+                }
+            }
+
+            foreach (KeyValuePair<int, (float sum, int count)> entry in categoryRatingSums)
+            {
+                categoryRatings[entry.Key] = entry.Value.sum / entry.Value.count;
+            }
+
+            return categoryRatings;
+        }
+
+        private async Task<Dictionary<int, float>> GetAverageRatingsForIngredientsAsync(string userId)
+        {
+            Dictionary<int, float>? ingredientRatings = new Dictionary<int, float>();
+
+            List<Rating>? userRatings = await _context.Ratings
+                                            .Where(r => r.AuthorId == userId)
+                                            .Include(r => r.Recipe)
+                                            .ThenInclude(r => r.Ingredients)
+                                            .ToListAsync();
+
+            Dictionary<int, (float sum, int count)>? ingredientRatingSums = new Dictionary<int, (float sum, int count)>();
+
+            foreach (Rating rating in userRatings)
+            {
+                foreach (Ingredient ingredient in rating.Recipe.Ingredients)
+                {
+                    if (!ingredientRatingSums.ContainsKey(ingredient.Id))
+                    {
+                        ingredientRatingSums[ingredient.Id] = (0, 0);
+                    }
+
+                    ingredientRatingSums[ingredient.Id] = (
+                        ingredientRatingSums[ingredient.Id].sum + rating.RatingValue,
+                        ingredientRatingSums[ingredient.Id].count + 1
+                    );
+                }
+            }
+
+            foreach (KeyValuePair<int, (float sum, int count)> entry in ingredientRatingSums)
+            {
+                ingredientRatings[entry.Key] = entry.Value.sum / entry.Value.count;
+            }
+
+            return ingredientRatings;
+        }
+
+        public async Task<List<(Recipe recipe, float averageRating)>> GetRecommendedRecipesAsync(string userId)
+        {
+            Dictionary<int, float> categoryRatings = await GetAverageRatingsForCategoriesAsync(userId);
+            Dictionary<int, float> ingredientRatings = await GetAverageRatingsForIngredientsAsync(userId);
+
+            var topCategories = categoryRatings.OrderByDescending(cr => cr.Value)
+                                               .Take(10)
+                                               .Select(cr => cr.Key)
+                                               .ToList();
+
+            var topIngredients = ingredientRatings.OrderByDescending(ir => ir.Value)
+                                                  .Take(10)
+                                                  .Select(ir => ir.Key)
+                                                  .ToList();
+
+            var recommendedRecipesWithRatings = new List<(Recipe recipe, float averageRating)>();
+
+            var recommendedRecipes = await _context.Recipes
+                                                    .Include(r => r.Categories)
+                                                    .Include(r => r.Ingredients)
+                                                    .ToListAsync();
+
+            foreach (var recipe in recommendedRecipes)
+            {
+                float ingredientRatingSum = 0;
+                int ingredientRatingCount = 0;
+
+                foreach (var ingredient in recipe.Ingredients)
+                {
+                    if (ingredientRatings.TryGetValue(ingredient.Id, out var rating))
+                    {
+                        ingredientRatingSum += rating;
+                        ingredientRatingCount++;
+                    }
+                }
+
+                float categoryRatingSum = 0;
+                int categoryRatingCount = 0;
+
+                foreach (Category category in recipe.Categories)
+                {
+                    if (categoryRatings.TryGetValue(category.Id, out var rating))
+                    {
+                        categoryRatingSum += rating;
+                        categoryRatingCount++;
+                    }
+                }
+
+                float averageRating = 0;
+                if (ingredientRatingCount > 0 || categoryRatingCount > 0)
+                {
+                    averageRating = (ingredientRatingSum + categoryRatingSum) / (ingredientRatingCount + categoryRatingCount);
+                    averageRating = (float)Math.Round(averageRating, 2);
+                }
+
+                recommendedRecipesWithRatings.Add((recipe, averageRating));
+            }
+
+            recommendedRecipesWithRatings.Sort((x, y) => y.averageRating.CompareTo(x.averageRating));
+
+            return recommendedRecipesWithRatings.Take(3).ToList();
+        }
+
+
+
+
 
     }
 }

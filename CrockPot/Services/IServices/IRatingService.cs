@@ -14,5 +14,7 @@ namespace CrockPot.Services.IServices
         Task<bool> SubmitRatingAsync(Rating rating, string currentUser, ModelStateDictionary modelState);
         Task<bool> DeleteRatingAsync(int id);
         bool RatingExists(int id);
+        Task<List<(Recipe recipe, float averageRating)>> GetRecommendedRecipesAsync(string userId);
+
     }
 }

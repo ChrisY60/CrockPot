@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using CrockPot.Models;
 using CrockPot.Services.IServices;
 using System.Security.Claims;
+using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace CrockPot.Controllers
 {
@@ -42,6 +44,19 @@ namespace CrockPot.Controllers
 
             await _ratingService.DeleteRatingAsync(id);
             return RedirectToAction("Details", "Recipes", new { id = rating.RecipeId });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetRecommendedRecipes()
+        {
+            List<(Recipe, float)>? recipes = await _ratingService.GetRecommendedRecipesAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
+            Debug.WriteLine("tukaaa");
+            for(int i = 0; i < recipes.Count; i++)
+            {
+                Debug.WriteLine(recipes[i].Item1.Name);   
+            }
+            Debug.WriteLine("tukaaa");
+            return View("~/Views/Recipes/RecommendedRecipes.cshtml", recipes);
         }
 
     }

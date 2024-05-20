@@ -1,0 +1,22 @@
+﻿@model IEnumerable<(CrockPot.Models.Recipe recipe, float averageRating)>
+@{
+    ViewData["Title"] = "Recommended recipes";
+}
+
+<h1>Recommended recipes based on your rating history</h1>
+
+<div style="text-align: center;">
+    @foreach (var item in Model)
+    {
+        <div class="big-recipe-container">
+            <a href="@Url.Action("Details", "Recipes", new { id = item.recipe.Id })" style="text-decoration: none; color: white;">
+                <p>@item.recipe.Name</p>
+                <p>Average Rating Estimated For You: @item.averageRating</p>
+                <div style="">
+                    <img src="@item.recipe.ImageUrl" alt="Image" style="width: 100%; height: auto;" />
+                </div>
+                
+            </a>
+        </div>
+    }
+</div>
